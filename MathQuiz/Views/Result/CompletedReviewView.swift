@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct CompletedReviewView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+
     var body: some View {
-        Text("Completed!")
+        let _ = print("CompletedReviewView body")
+        Text("Completed! \(navigationManager.path.count)")
         
-        NavigationLink("Take another quiz", destination: {
-            StartQuizView()
-        })
+        Button(action: {
+            navigationManager.gotoHome()
+        }) {
+            Text("Start Another Quiz")
+                .font(.title3)
+        }
     }
 }
 

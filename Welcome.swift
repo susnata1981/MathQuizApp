@@ -8,8 +8,18 @@
 import SwiftUI
 
 struct Welcome: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        let _ = print(navigationManager.path)
+        Text("Hello, World! \(navigationManager.path.count)")
+        
+        Button(action: {
+            navigationManager.gotoHome()
+        }) {
+            Text("Home")
+                .font(.title2)
+        }
     }
 }
 

@@ -153,6 +153,8 @@ struct SignupView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var userManager: UserManager
     
+//    @StateObject var navManager = NavigationManager()
+
     var body: some View {
         
         NavigationStack {
@@ -207,17 +209,25 @@ struct SignupView: View {
                 HStack {
                     Text("Already have an account?")
                     NavigationLink("Sign In", destination: SigninView())
+                        .foregroundColor(.blue)
                 }.font(.subheadline)
                 
                 Spacer()
             }
+//            .navigationDestination(isPresented: $userManager.signedIn) {
+//                let _ = print("Navigation destination: SQV")
+//                StartQuizView()
+//            }
             .navigationDestination(isPresented: Binding(get: {
                 userManager.isUserLoggedIn()
             }, set: { _ in } )) {
+                let _ = print("Navigation destination: SQV")
                 StartQuizView()
             }
+           
             .padding()
         }
+//        .environmentObject(navManager)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -286,7 +296,7 @@ struct SignupView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SignupView()
-                .environment(UserManager())
+                .environmentObject(UserManager())
         }
     }
 }

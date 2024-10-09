@@ -8,11 +8,27 @@
 import SwiftUI
 
 struct ChoiceRow: View {
+    var choices: [String]
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        GridRow {
+            ForEach(choices, id: \.self) { item in
+                Button(action: {
+                }, label: {
+                    Text(item)
+                        .padding(10)
+                        .background(Color.brown)
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .cornerRadius(8)
+                })
+            }
+        }
     }
+    
 }
 
 #Preview {
-    ChoiceRow()
+    ChoiceRow(choices: ["24", "12", "23"])
 }

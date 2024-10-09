@@ -7,12 +7,36 @@
 
 import SwiftUI
 
-struct Utility: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+struct PrimaryButtonModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 20, weight: .bold))
+            .padding()
+            .foregroundColor(.white)
+            .background(.pink.opacity(0.7))
+            .cornerRadius(5.0)
     }
 }
 
-#Preview {
-    Utility()
+struct SecondaryButtonModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 20, weight: .bold))
+            .padding()
+            .foregroundColor(.white)
+            .background(.pink.opacity(0.4))
+            .cornerRadius(5.0)
+    }
+}
+
+extension View {
+    func primaryButtonStyle() -> some View {
+        self.modifier(PrimaryButtonModifier())
+    }
+    
+    func secondaryButtonStyle() -> some View {
+        self.modifier(SecondaryButtonModifier())
+    }
 }

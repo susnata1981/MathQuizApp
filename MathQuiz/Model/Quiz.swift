@@ -10,22 +10,40 @@ import FirebaseFirestore
 
 enum MathOperation: String, CaseIterable, Codable {
     case add = "+", subtract = "-", multiply = "x", divide = "%"
+    
+    var description: String {
+        switch self {
+        case .add: return "Add"
+        case .subtract: return "Subtract"
+        case .multiply: return "Multiply"
+        case .divide: return "Divide"
+        }
+    }
 }
 
 enum DifficultyLevel: String, CaseIterable, Codable {
     case easy = "Easy", medium = "Medium", hard = "Hard"
 }
 
+enum CompletionStatus: String, Codable {
+    case notStarted = "Not Started", inProgress = "In Progress", completed = "Completed"
+}
+
 class Quiz: CustomDebugStringConvertible, Hashable, Codable {
     private static let NUM_PROBLEMS = 10
     
     var id: String?
+    var uid: String?
     let difficultyLevel: DifficultyLevel
     let operation: MathOperation
     let totalProblems: Int
     var numChoicesPerProblem = 4
     
     var problems = [Problem]()
+    var answers = [Int:String]()
+    var score: Score?
+    var status: CompletionStatus = .notStarted
+    var createdAt = Date()
     
     init(operation: MathOperation,
          difficultyLevel: DifficultyLevel,
@@ -56,23 +74,45 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
         return q
     }
     
-    func getProblem(index: Int) -> Problem? {
-        guard index < problems.count else {
-            print("\(index) exceed problem size")
-            return nil
-        }
-        
+    func getProblem(index: Int) -> Problem {
         return problems[index]
+    }
+    
+    func getProblemById(problemId: Int) -> Problem? {
+        return problems.filter{ $0.id == problemId }.first
     }
     
     func getProblemCount() -> Int { problems.count }
 
     private func save(_ user:User) async {
         do {
+            self.uid = user.uid
             self.id = try await QuizDao.shared.save(user, self)
         } catch {
             print("Failed to save quiz!")
         }
+    }
+    
+//    var description: String {
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.timeStyle = .medium
+//        let formattedDate = dateFormatter.string(from: self.createdAt)
+//        
+//        return "Status: \(self.status) Score: \(self.score.percentScore ?? 0)"
+//    }
+    
+    var getPercentageScore: String {
+        if let score = self.score {
+            return String(score.percentScore)
+        }
+        
+        return "0"
+    }
+    
+    func getCreatedAtDate() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        return dateFormatter.string(from: self.createdAt)
     }
     
     var debugDescription: String {

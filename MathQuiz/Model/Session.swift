@@ -7,34 +7,39 @@
 
 import Foundation
 
-@Observable
-class Session: Hashable {
-  
-    var user: User?
+class Session: ObservableObject, Hashable {
+    
+    @Published var user: User?
     var quiz: Quiz?
-    var problemAnswerMap = [Problem:Answer]()
-    
-    init(user: User, quiz: Quiz) {
-        self.user = user
-        self.quiz = quiz
-    }
-    
-    init(quiz: Quiz) {
-        self.quiz = quiz
-    }
     
     init() {}
     
     func setAnswer(problem: Problem, answer: Answer) -> Void {
-        problemAnswerMap[problem] = answer
+        quiz!.answers[problem.id!] = answer.value
+        quiz!.status = .inProgress
+        
+        Task {
+            await QuizDao.shared.update(quiz!)
+        }
     }
     
-    var score: (Int, Int) {
+    // TODO: move this function
+    var score: (totalCorrect: Int, totalIncorrect: Int) {
         get {
             var totalCorrect = 0, totalIncorrect = 0
             
-            for (problem, answer) in problemAnswerMap {
-                if (problem.isAnswerCorrect(userInput: answer.value)) {
+            guard quiz != nil else {
+                print("Quiz is nil!")
+                return (totalCorrect: 0, totalIncorrect: 0)
+            }
+            
+            for (problemId, answer) in quiz!.answers {
+                guard let problem = quiz!.getProblemById(problemId: problemId) else {
+                    print("Can't find problem with id \(problemId)")
+                    return (totalCorrect: 0, totalIncorrect: 0)
+                }
+                
+                if (problem.isAnswerCorrect(userInput: answer)) {
                     totalCorrect = totalCorrect + 1
                 } else {
                     totalIncorrect = totalIncorrect + 1
@@ -45,7 +50,20 @@ class Session: Hashable {
         }
     }
     
-   
+    func saveScore() async {
+        let currScore = score
+        quiz!.score = Score(totalCorrect: currScore.totalCorrect, totalIncorrect: currScore.totalIncorrect)
+        quiz?.status = .completed
+        
+        Task {
+            await QuizDao.shared.update(quiz!)
+        }
+    }
+    
+    func resetQuiz() {
+        quiz = nil
+    }
+    
     static func == (lhs: Session, rhs: Session) -> Bool {
         lhs.quiz == rhs.quiz && lhs.user == rhs.user
     }

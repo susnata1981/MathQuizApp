@@ -8,8 +8,25 @@
 import SwiftUI
 
 struct SignView: View {
+    
+    @State var email: String = ""
+    @State var password: String = ""
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            
+            Text("Sign In")
+                .font(.title2)
+            
+            HStack {
+                Spacer()
+                
+                Button("Sign In") {
+                }
+                
+                Spacer()
+            }
+        }
     }
 }
 

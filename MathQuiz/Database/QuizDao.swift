@@ -19,6 +19,36 @@ class QuizDao {
     
     private init() {}
     
+    func getAll(_ user:User) async throws -> [Quiz] {
+        
+        let task = Task {
+            var result = [Quiz]()
+
+            do {
+                let db = Firestore.firestore()
+                let quizSnapshot = try await db.collection("Quizzes").whereField("uid", isEqualTo: user.uid)
+                    .order(by: "createdAt", descending: true)
+                    .getDocuments()
+                
+                print("Retrieved quizSnaphot \(quizSnapshot)")
+                print(quizSnapshot.documents.count)
+                
+                for docRef in quizSnapshot.documents {
+                    let quiz = try docRef.data(as: Quiz.self)
+                    result.append(quiz)
+                    print("Quiz = \(quiz)")
+                }
+                
+                return result
+            } catch {
+                print("Failed to save quiz to firestore \(error)")
+                throw AppError.FirebaseError
+            }
+        }
+        
+        return try await task.result.get()
+    }
+    
     func save(_ user:User, _ quiz: Quiz) async throws -> String? {
         guard let uid = user.uid else {
             print("User uid not set")
@@ -41,55 +71,15 @@ class QuizDao {
         return try await task.result.get()
     }
     
-//    func save(_ user:User, _ quiz: Quiz) async throws -> String? {
-//        guard let uid = user.uid else {
-//            print("User uid not set")
-//            throw AppError.UserNotLoggedIn
-//        }
-//        
-//        let task = Task {
-//            do {
-//                let db = Firestore.firestore()
-//                
-//                // Create Quiz
-//                let quizRef = try await db.collection("Quizzes").addDocument(data: [
-//                    "createdAt": Date(),
-//                    "uid": uid
-//                ])
-//
-//                for (index, item) in quiz.problems.enumerated() {
-//                    let problemRef = try await db.collection("Quizzes")
-//                        .document(quizRef.documentID)
-//                        .collection("Problems")
-//                        .addDocument(from: item)
-//                    
-//                    let choicesRef = db.collection("Quizzes")
-//                        .document(quizRef.documentID)
-//                        .collection("Problems")
-//                        .document(problemRef.documentID)
-//                        .collection("Choices")
-//                    
-//                    for var choice in item.multiChoiceItems {
-//                        let choiceRef = try choicesRef.addDocument(from: choice)
-//                        choice.id = choiceRef.documentID
-//                    }
-//                }
-//                
-//                // Save the quiz under Users
-//                let _ = try await db.collection("Users")
-//                    .document(uid)
-//                    .collection("Quizzes")
-//                    .document(quizRef.documentID).setData([
-//                        "id": quizRef.documentID
-//                    ])
-//                print("Saved new quiz: \(quizRef.documentID) uid: \(uid)")
-//                return quizRef.documentID
-//            } catch {
-//                print("Failed to save quiz to firestore \(error)")
-//                throw AppError.FirebaseError
-//            }
-//        }
-//        
-//        return try await task.result.get()
-//    }
+    func update(_ quiz: Quiz) async {
+        let db = Firestore.firestore()
+        
+        Task {
+            do {
+                try db.collection("Quizzes").document(quiz.id!).setData(from: quiz)
+            } catch {
+                print("Error updating answers inside quiz \(String(describing: quiz.id)): \(error.localizedDescription)")
+            }
+        }
+    }
 }

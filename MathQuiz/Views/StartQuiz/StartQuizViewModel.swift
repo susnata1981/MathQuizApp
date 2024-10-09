@@ -16,13 +16,9 @@ class StartQuizViewModel {
     
     var quiz: Quiz?
     var user: User?
-    var session: Session?
     
-    
-    private static let TOTAL_PROBLEMS = 3
-    
+    private static let totalProblems = 3
     var hasError = false
-    var showQuizView = false
     
     var selectedOperation: MathOperation?
     var selectedDiffilcultyLevel: DifficultyLevel = .easy
@@ -44,21 +40,18 @@ class StartQuizViewModel {
         return true
     }
     
-    func handleStartQuiz() async {
+    func handleStartQuiz() async -> Quiz? {
         if (!validate()) {
-            return
+            return nil
         }
         
         quiz = await Quiz.createAndSave(
             user: user!,
             operation: selectedOperation!,
             level: selectedDiffilcultyLevel,
-            numProblems: StartQuizViewModel.TOTAL_PROBLEMS)
+            numProblems: StartQuizViewModel.totalProblems)
         
-        // We have already validated that user exists
-        session!.quiz = quiz!
-        
-        showQuizView = true
+        return quiz
     }
     
     func handleSelectOperation(_ op: MathOperation) {

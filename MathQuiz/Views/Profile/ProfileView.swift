@@ -12,12 +12,6 @@ struct ProfileView: View {
     @EnvironmentObject var userManager: UserManager
     @State var profileVM = ProfileViewModel()
     
-    @EnvironmentObject var navigationManager: NavigationManager
-    
-//    enum Destination: Hashable {
-//        case reviewResult(quiz: Quiz)
-//    }
-    
     var body: some View {
         VStack {
             Text("Total quiz: \(profileVM.quizzes.count)")
@@ -36,14 +30,14 @@ struct ProfileView: View {
                             .font(.body)
                     }
                 }
-            }.navigationDestination(for: Destination.self) { value in
-                switch value {
-                case .reviewResult(let quiz):
-                    ReviewResultView(quiz: quiz)
-                }
             }
             .onAppear {
                 profileVM.user = userManager.user
+                Task {
+                    await profileVM.getQuizzes()
+                }
+            }.refreshable {
+                print("Do your refresh work here")
                 Task {
                     await profileVM.getQuizzes()
                 }

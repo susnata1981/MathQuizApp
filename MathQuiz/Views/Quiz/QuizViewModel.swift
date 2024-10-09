@@ -11,23 +11,31 @@ import SwiftUI
 
 class QuizViewModel: ObservableObject {
     
-    let textColor = Color.purple
+    let selectedTextColor = Color.purple
+    let defaultTextColor = Color.white
+    
     let selectedChoiceBackgroundColor = Color.purple.opacity(0.4)
     
     @Published var showResults: Bool = false
     @Published var isSelectedChoiceCorrect: Bool = false
     
     @Published var ctx: Context = Context()
-    var quiz: Quiz?
+    var quiz: Quiz? {
+        didSet {
+            self.ctx = Context()
+            self.ctx.currentProblem = quiz!.getProblem(index: 0)
+//            self.currProblem = quiz!.getProblem(index: 0)
+        }
+    }
     
-    @Published var currProblem: Problem?
+//    @Published var currProblem: Problem?
     
     var session: Session? {
         didSet {
             self.quiz = session!.quiz
             self.ctx = Context()
-            self.ctx.currentProblem = quiz!.getProblem(index: ctx.currentIndex)!
-            self.currProblem = quiz!.getProblem(index: ctx.currentIndex)!
+            self.ctx.currentProblem = quiz!.getProblem(index: ctx.currentIndex)
+//            self.currProblem = quiz!.getProblem(index: ctx.currentIndex)
         }
     }
     
@@ -51,10 +59,10 @@ class QuizViewModel: ObservableObject {
     }
     
     func handleChoiceSelection(choice: MultiChoiceItem) {
-        guard let _ = self.session else {
-            print("Session not set in QuizViewModel")
-            return
-        }
+//        guard let _ = self.session else {
+//            print("Session not set in QuizViewModel")
+//            return
+//        }
         
         ctx.selectedChoice = choice
         ctx.hasUserAnswered = true
@@ -66,12 +74,24 @@ class QuizViewModel: ObservableObject {
             userInput: choice.content)
     }
     
+    func didUserSelect(_ problem: Problem, _ choice: MultiChoiceItem) -> Bool {
+        if let q = quiz {
+            let answer = q.answers.filter{ $0.key == problem.id }.first?.value
+            if answer != nil && choice.content == answer! {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     func getCorrectAnswer() -> String {
         return String(ctx.currentProblem!.answer)
     }
     
     func isChoiceSelected(_ choice: MultiChoiceItem) -> Bool {
         if ctx.selectedChoice != nil {
+            // TODO: Change to id
             return ctx.selectedChoice!.content == choice.content
         }
         
@@ -91,9 +111,12 @@ class QuizViewModel: ObservableObject {
             return
         }
         
-        session!.setAnswer(
-            problem: ctx.currentProblem!, answer: Answer(value: ctx.selectedChoice!.content))
-        updateChoiceState(ctx.selectedChoice!)
+        quiz!.answers[ctx.currentProblem!.id!] = ctx.selectedChoice!.content
+        quiz!.status = .inProgress
+        
+        Task {
+            await QuizDao.shared.update(quiz!)
+        }
         
         if hasFinishedQuiz() {
             // Finished Quiz
@@ -101,6 +124,15 @@ class QuizViewModel: ObservableObject {
         } else {
             // Next Question
             getNextProblem()
+        }
+    }
+    
+    func setAnswer(problem: Problem, answer: Answer) -> Void {
+        quiz!.answers[problem.id!] = answer.value
+        quiz!.status = .inProgress
+        
+        Task {
+            await QuizDao.shared.update(quiz!)
         }
     }
     
@@ -112,22 +144,15 @@ class QuizViewModel: ObservableObject {
             return
         }
         
-        guard let temp = quiz!.getProblem(index: ctx.currentIndex) else {
-            print("Error: Failed to fetch problem for index: \(ctx.currentIndex)")
-            return
-        }
-        ctx.currentProblem = temp
+//        guard let temp = quiz!.getProblem(index: ctx.currentIndex) else {
+//            print("Error: Failed to fetch problem for index: \(ctx.currentIndex)")
+//            return
+//        }
+        ctx.currentProblem = quiz!.getProblem(index: ctx.currentIndex)
         ctx.selectedAnswer = nil
         ctx.selectedChoice = nil
         ctx.hasUserAnswered = false
-        currProblem = temp
-    }
-    
-    private func updateChoiceState(_ choice: MultiChoiceItem) {
-        let selectedIndex = ctx.currentProblem!.multiChoiceItems.firstIndex(of: choice)
-        if selectedIndex != nil {
-            ctx.currentProblem!.multiChoiceItems[selectedIndex!].setSelected()
-        }
+//        currProblem = quiz!.getProblem(index: ctx.currentIndex) 
     }
     
 }
