@@ -18,7 +18,7 @@ struct Problem: CustomDebugStringConvertible, Hashable, Codable {
     var multiChoiceItems: [MultiChoiceItem] = []
     var userInput: Answer?
     
-    init(num1: Int, num2: Int, operation: MathOperation, numChoices: Int) {
+    init(num1: Int, num2: Int, operation: MathOperation, numChoices: Int = 4) {
         self.num1 = num1
         self.num2 = num2
         self.operation = operation

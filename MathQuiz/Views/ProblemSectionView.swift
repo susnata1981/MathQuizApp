@@ -5,44 +5,55 @@
 //  Created by Susnata Basak on 9/2/24.
 //
 
+
 import SwiftUI
 
 struct ProblemSectionView: View {
-    
     @EnvironmentObject var userManager: UserManager
+    @EnvironmentObject var theme: Theme
     
     var indexOfProblem: Int
     var problem: Problem?
     var quiz: Quiz?
     
     var body: some View {
-        if let _ = problem {
-            
-            let _ = print(quiz ?? "Quiz not available")
-            
-            VStack {
-                Text("Question \(indexOfProblem + 1).")
-                    .font(.title3)
-                    .foregroundColor(.purple)
+        if let problem = problem {
+            VStack(spacing: 20) {
+                Text("Question \(indexOfProblem + 1)")
+                    .font(theme.fonts.bold)
+                    .foregroundColor(theme.colors.primary)
                 
-                HStack(alignment: .firstTextBaseline) {
-                    
-                    Text(problem!.getFirstNumber())
-                    Text(problem!.getOperationName())
-                    Text(problem!.getSecondNumber())
-                    
-                }.font(.system(size: 80))
-                    .fontWeight(.bold)
-                    .foregroundColor(Color.purple)
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text(problem.getFirstNumber())
+                    Text(problem.getOperationName())
+                    Text(problem.getSecondNumber())
+                }
+                .font(theme.fonts.xlarge.weight(.bold))
+                .foregroundColor(theme.colors.primary)
             }
+            .frame(width: 180)
+            .padding()
+            .background(.white)
+            .cornerRadius(15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(theme.colors.primary.opacity(0.3), lineWidth: 2)
+            )
         } else {
             ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: theme.colors.primary))
         }
     }
 }
 
-//#Preview {
-//    @State var vm = QuizViewModel()
-//    return ProblemSectionView(viewModel: $vm)
-//        .environment(User(name: "Adi", age: 7))
-//}
+struct ProblemSectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProblemSectionView(
+            indexOfProblem: 0,
+            problem: Problem(num1: 2, num2: 3, operation: .add, numChoices: 4),
+            quiz: nil
+        )
+        .environmentObject(UserManager())
+        .environmentObject(Theme.theme1) // Use your default theme here
+    }
+}

@@ -29,12 +29,15 @@ class UserManager: ObservableObject {
                         print("UserDoc = \(userDoc.exists)")
                         if userDoc.exists {
                             print(userDoc.data()!["Name"] ?? "NA")
-                            self.user = User(
-                                uid: user!.uid,
-                                name: userDoc.data()!["Name"] as! String,
-                                email: userDoc.data()!["Email"] as! String)
                             
-                            self.signedIn = true
+                            DispatchQueue.main.async {
+                                self.user = User(
+                                    uid: user!.uid,
+                                    name: userDoc.data()!["Name"] as! String,
+                                    email: userDoc.data()!["Email"] as! String)
+                                
+                                self.signedIn = true
+                            }
                         } else {
                             print("Document does not exist for user: \(user!.uid)")
                         }

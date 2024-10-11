@@ -14,7 +14,7 @@ struct StartView: View {
         if (userManager.isUserLoggedIn()) {
             StartQuizView()
         } else {
-            SignupView()
+            SigninView()
         }
     }
 }

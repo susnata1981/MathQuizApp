@@ -101,12 +101,12 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
 //        return "Status: \(self.status) Score: \(self.score.percentScore ?? 0)"
 //    }
     
-    var getPercentageScore: String {
+    var getPercentageScore: Int {
         if let score = self.score {
-            return String(score.percentScore)
+            return score.percentScore
         }
         
-        return "0"
+        return 0
     }
     
     func getCreatedAtDate() -> String {

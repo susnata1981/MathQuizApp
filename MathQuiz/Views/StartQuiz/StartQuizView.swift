@@ -6,157 +6,153 @@
 ////
 //
 
+
 import SwiftUI
-import _AuthenticationServices_SwiftUI
 
 struct StartQuizView: View {
-    
     @EnvironmentObject var userManager: UserManager
     @EnvironmentObject var session: Session
+    @EnvironmentObject var theme: Theme
     
-    @State var sqViewModel = StartQuizViewModel()
+    @State private var viewModel = StartQuizViewModel()
     @State private var showCountdown = false
-    @State private var gameStarted = false
     
-    @StateObject var navManager = NavigationManager()
-    @StateObject var navigationManager2 = NavigationManager()
+    @StateObject var quizNavManager = NavigationManager()
+    @StateObject var profileNavManager = NavigationManager()
     
     var body: some View {
-        TabView {
-            NavigationStack(path: $navManager.path) {
-                VStack {
-                    SelectGameView(sqViewModel: sqViewModel, showCountdown: $showCountdown)
-                }.navigationDestination(for: Destination.self) { dest in
-                    let _ = print("SQV: destination = \(dest)")
-                    switch(dest) {
-                    case .startQuiz:
-                        QuizView()
-                    case .complete:
-                        CompletedReviewView()
-                    case .reviewResult(let quiz):
-                        ReviewResultView(quiz: quiz)
+        TabView(selection: $quizNavManager.selectTab) {
+            NavigationStack(path: $quizNavManager.path) {
+                mainContent
+                    .navigationDestination(for: Destination.self) { dest in
+                        switch dest {
+                        case .startQuiz:
+                            QuizView()
+                        case .complete:
+                            CompletedReviewView()
+                        case .reviewResult(let quiz):
+                            ReviewResultView(quiz: quiz)
+                        }
                     }
-                }
             }
-            .environmentObject(navManager)
+            .environmentObject(quizNavManager)
             .tabItem {
-                Image(systemName: "house.fill")
-                Text("Home")
+                Label("Home", systemImage: "house.fill")
             }
-            .tag(0)
             
-            
-            // Second Tab
-            NavigationStack(path: $navigationManager2.path) {
-                VStack {
-                    ProfileView()
-                        .environmentObject(navigationManager2)
-                }.navigationDestination(for: Destination.self) { value in
-                    switch value {
-                    case .reviewResult(let quiz):
-                        ReviewResultView(quiz: quiz)
-                    case .complete:
-                        CompletedReviewView()
-                    case .startQuiz:
-                        QuizView()
+            NavigationStack(path: $profileNavManager.path) {
+                ProfileView()
+                    .navigationDestination(for: Destination.self) { dest in
+                        switch dest {
+                        case .reviewResult(let quiz):
+                            ReviewResultView(quiz: quiz)
+                        case .complete:
+                            CompletedReviewView()
+                        case .startQuiz:
+                            QuizView()
+                        }
                     }
-                }
-            }.environmentObject(navigationManager2)
-                .tabItem {
-                Image(systemName: "person.crop.circle.fill")
-                Text("Profile")
             }
-            .tag(1)
-            
-        }.onAppear {
-            session.user = userManager.user
-            sqViewModel.user = userManager.user
+            .environmentObject(profileNavManager)
+            .tabItem {
+                Label("Profile", systemImage: "person.crop.circle.fill")
+            }
         }
-        
+        .onAppear(perform: setupSession)
+        .accentColor(theme.colors.accent)
     }
-}
-
-struct SelectGameView: View {
-    var sqViewModel: StartQuizViewModel
-    @EnvironmentObject var userManager: UserManager
-    @EnvironmentObject var session: Session
-    @Binding var showCountdown:Bool
-    @EnvironmentObject var navManager: NavigationManager
-
-    var body: some View {
+    
+    private var mainContent: some View {
         VStack {
             ZStack {
+                theme.colors.background.ignoresSafeArea()
+                
                 if showCountdown {
                     MyCountDownView(showCountdown: $showCountdown) {
                         Task {
-                            session.quiz = await sqViewModel.handleStartQuiz()
+                            print("Animation finished, waiting for quiz handler")
+                            session.quiz = await viewModel.handleStartQuiz()
                             showCountdown = false
-                            navManager.gotoQuiz()
+                            quizNavManager.gotoQuiz()
                         }
                     }
                     .transition(.opacity)
                 }
                 
                 VStack(spacing: 30) {
-                    Text("Math Quiz")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(
-                            Capsule()
-                                .fill(Color.white.opacity(0.2))
-                                .blur(radius: 10)
-                        )
-                    
-                    Text("Choose Game")
-                        .font(.system(size: 32, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color("primary"))
-                    
-                    ChooseGameType(viewModel: sqViewModel)
-                    
-                    DifficultyPicker(viewModel: sqViewModel)
-                    
-                    Button(action: {
-                        if (sqViewModel.validate()) {
-                            showCountdown = true
-                        }
-                    }) {
-                        Text("Start Quiz")
-                            .modifier(ImprovedDefaultTextButton())
-                    }
-                    .alert("Choose operation", isPresented: Binding<Bool> (
-                        get: { sqViewModel.hasError },
-                        set: { sqViewModel.hasError = $0 }
-                    )) {
-                        Button("OK", role: .cancel) {}
-                    } message: {
-                        Text("Please select an operation before starting the quiz.")
-                    }
+                    titleView
+                    ChooseGameType(viewModel: viewModel)
+                    DifficultyPicker(viewModel: viewModel)
+                    startButton
                 }
                 .padding()
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        userManager.signOut { error in
-                            print("Error = \(String(describing: error))")
-                        }
-                    }) {
-                        Text("\(userManager.user!.name) Sign Out")
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.red.opacity(0.8))
-                            .cornerRadius(8)
-                    }
-                    .opacity(userManager.isUserLoggedIn() ? 1 : 0)
-                }
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    signOutButton
+//                }
+//            }
+        }
+    }
+    
+    private var titleView: some View {
+        VStack {
+            Text("Math Quiz")
+                .font(theme.fonts.large)
+                .foregroundColor(theme.colors.text)
+                .padding()
+            
+            Text("Choose Game")
+                .font(theme.fonts.bold)
+                .foregroundColor(theme.colors.primary)
+        }
+    }
+    
+    private var startButton: some View {
+        StandardButton(title: "Start Quiz", action: {
+            if viewModel.validate() {
+                showCountdown = true
             }
+        })
+        .alert("Choose operation", isPresented: $viewModel.hasError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Please select an operation before starting the quiz.")
+        }
+    }
+    
+    private var signOutButton: some View {
+        Button(action: {
+            userManager.signOut(completion: { err in
+                print("Failed to sign out \(String(describing: err?.localizedDescription))")
+            })
+        }) {
+            Text("\(userManager.user?.name ?? "") Sign Out")
+                .font(theme.fonts.regular)
+                .foregroundColor(theme.colors.text)
+                .padding(8)
+                .background(theme.colors.accent.opacity(0.8))
+                .cornerRadius(8)
+        }
+        .opacity(userManager.isUserLoggedIn() ? 1 : 0)
+    }
+    
+    private func setupSession() {
+        session.user = userManager.user
+        viewModel.user = userManager.user
+    }
+    
+    private func startQuiz() {
+        Task {
+            session.quiz = await viewModel.handleStartQuiz()
+            quizNavManager.gotoQuiz()
         }
     }
 }
 
 struct ChooseGameType: View {
-    let viewModel: StartQuizViewModel
+    @State var viewModel: StartQuizViewModel
+    @EnvironmentObject var theme: Theme
     
     var body: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 20) {
@@ -170,25 +166,24 @@ struct ChooseGameType: View {
 
 struct GameTypeButton: View {
     let operation: MathOperation
-    let viewModel: StartQuizViewModel
+    @State var viewModel: StartQuizViewModel
+    @EnvironmentObject var theme: Theme
     
     var body: some View {
         Button(action: { viewModel.handleSelectOperation(operation) }) {
             VStack {
                 Text(operation.rawValue)
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundColor(.white)
-
+                    .font(theme.fonts.xlarge)
                 Text(operation.description)
-                    .font(.caption)
-                    .foregroundColor(.white)
-
+                    .font(theme.fonts.regular)
             }
+            //            .foregroundColor(theme.colors.text)
+            .foregroundColor(.white)
             .frame(width: 100, height: 100)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(viewModel.selectedOperation == operation ? Color.green.opacity(0.8) : Color("primary"))
-                    .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+                    .fill(viewModel.selectedOperation == operation ? theme.colors.accent : theme.colors.primary)
+                    .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
             )
         }
         .animation(.spring(), value: viewModel.selectedOperation)
@@ -196,45 +191,33 @@ struct GameTypeButton: View {
 }
 
 struct DifficultyPicker: View {
-    let viewModel: StartQuizViewModel
+    @State var viewModel: StartQuizViewModel
+    @EnvironmentObject var theme: Theme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Difficulty Level")
-                .font(.headline)
-                .foregroundColor(.white)
+                .font(theme.fonts.bold)
+                .foregroundColor(theme.colors.text)
             
-            Picker("Select Difficulty", selection: Binding(
-                get: { viewModel.selectedDiffilcultyLevel },
-                set: { viewModel.selectedDiffilcultyLevel = $0 }
-            )) {
+            Picker("Select Difficulty", selection: $viewModel.selectedDiffilcultyLevel) {
                 ForEach(DifficultyLevel.allCases, id: \.self) { level in
                     Text(level.rawValue.capitalized)
                         .tag(level)
                 }
             }
             .pickerStyle(.segmented)
-            .background(Color.white.opacity(0.2))
-            .cornerRadius(8)
+            .background(theme.colors.background)
         }
         .padding()
     }
 }
 
-struct ImprovedDefaultTextButton: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .font(.system(size: 24, weight: .bold, design: .rounded))
-            .foregroundColor(.white)
-            .padding()
-            .background(Color("primary"))
-            .cornerRadius(10)
-            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+extension UISegmentedControl {
+    override open func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        self.selectedSegmentTintColor = UIColor(Theme.theme1.colors.accent)
     }
 }
 
-//#Preview {
-//    StartQuizView()
-//        .environmentObject(QuizViewModel())
-//        .environmentObject(UserManager())
-//}
+

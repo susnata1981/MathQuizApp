@@ -5,75 +5,129 @@
 //  Created by Susnata Basak on 9/29/24.
 //
 
+//import SwiftUI
+//
+//struct ReviewResultView: View {
+//    
+//    @EnvironmentObject var quizNavManager: NavigationManager
+//    
+//    @State var currIndex: Int
+//    @State var currProblem: Problem
+//    @State var startNewGame = false
+//    
+//    var quiz: Quiz
+//    
+//    init(quiz: Quiz) {
+//        self.quiz = quiz
+//        self.currIndex = 0
+//        self.currProblem = quiz.getProblem(index: 0)
+//    }
+//    
+//    var body: some View {
+//        let _ = print("ReviewResultView: body")
+//        
+//        VStack {
+//            ProblemSectionView(indexOfProblem: currIndex, problem: currProblem, quiz: quiz)
+//                .padding()
+//                .background(Color.white.opacity(0.9))
+//                .cornerRadius(20)
+//                .shadow(radius: 10)
+//            
+//            HStack {
+//                MyMultiChoiceView(problem: currProblem, quiz: quiz, isReviewMode: true)
+//            }.padding()
+//            
+//            Spacer()
+//            
+//            Text("Correct Answer is \(currProblem.answer)")
+//                .font(.custom("Comic Sans MS", size: 24))
+//                .fontWeight(.bold)
+//                .foregroundColor(.purple)
+//            
+//            Spacer()
+//            
+//            nextButtonView
+//        }
+//    }
+//    
+//    var nextButtonView: some View {
+//        
+//            Button(action: {
+//                currIndex = currIndex + 1
+//                if currIndex < quiz.getProblemCount() {
+//                    currProblem = quiz.getProblem(index: currIndex)
+//                } else {
+//                    quizNavManager.gotoCompleteReview()
+//                }
+//            }) {
+//                Text("Next")
+//                    .font(.custom("Comic Sans MS", size: 24))
+//                    .fontWeight(.bold)
+//                    .foregroundColor(.white)
+//            }.primaryButtonStyle()
+//    }
+//}
+//
+
 import SwiftUI
 
 struct ReviewResultView: View {
+    @EnvironmentObject var quizNavManager: NavigationManager
+    @EnvironmentObject var theme: Theme
     
-    @EnvironmentObject var navManager: NavigationManager
+    @State private var currIndex: Int
+    @State private var currProblem: Problem
     
-    @State var currIndex: Int
-    @State var currProblem: Problem
-    @State var startNewGame = false
-    
-    var quiz: Quiz
+    let quiz: Quiz
     
     init(quiz: Quiz) {
         self.quiz = quiz
-        self.currIndex = 0
-        self.currProblem = quiz.getProblem(index: 0)
+        self._currIndex = State(initialValue: 0)
+        self._currProblem = State(initialValue: quiz.getProblem(index: 0))
     }
     
     var body: some View {
-        let _ = print("ReviewResultView: body")
-        
         VStack {
             ProblemSectionView(indexOfProblem: currIndex, problem: currProblem, quiz: quiz)
                 .padding()
-                .background(Color.white.opacity(0.9))
-                .cornerRadius(20)
-                .shadow(radius: 10)
             
-            HStack {
-                MyMultiChoiceView(problem: currProblem, quiz: quiz, isReviewMode: true)
-            }.padding()
+            MyMultiChoiceView(problem: currProblem, quiz: quiz, isReviewMode: true)
+                .padding()
             
             Spacer()
             
             Text("Correct Answer is \(currProblem.answer)")
-                .font(.custom("Comic Sans MS", size: 24))
+                .font(theme.fonts.large)
                 .fontWeight(.bold)
-                .foregroundColor(.purple)
+                .foregroundColor(theme.colors.primary)
             
             Spacer()
             
             nextButtonView
         }
-//        .onAppear {
-//            let _ = print("ReviewResultView: onAppear")
-//            print("Path = \(navigationManager.path) \(navigationManager.path.count)")
-//        }
-//        .navigationDestination(isPresented: $startNewGame) {
-//            let _ = print("ReviewResultView: navigationDestination \(startNewGame) \(navigationManager.path.count)")
-//            CompletedReviewView()
-//        }
+        .padding()
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .background(theme.colors.background.edgesIgnoringSafeArea(.all))
     }
     
-    var nextButtonView: some View {
-        
-            Button(action: {
-                currIndex = currIndex + 1
-                if currIndex < quiz.getProblemCount() {
-                    currProblem = quiz.getProblem(index: currIndex)
-                } else {
-//                    startNewGame = true
-                    navManager.gotoCompleteReview()
-                }
-            }) {
-                Text("Next")
-                    .font(.custom("Comic Sans MS", size: 24))
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-            }.primaryButtonStyle()
+    private var nextButtonView: some View {
+        StandardButton(title: "Next", action: handleNextButtonTap)
+    }
+    
+    private func handleNextButtonTap() {
+        currIndex += 1
+        if currIndex < quiz.getProblemCount() {
+            currProblem = quiz.getProblem(index: currIndex)
+        } else {
+            quizNavManager.gotoCompleteReview()
+        }
     }
 }
 
+struct ReviewResultView_Previews: PreviewProvider {
+    static var previews: some View {
+        ReviewResultView(quiz: Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 3))
+            .environmentObject(NavigationManager())
+            .environmentObject(Theme.theme1) // Use your default theme here
+    }
+}

@@ -12,10 +12,16 @@ class NavigationManager: ObservableObject {
     @Published var selectTab: Int = 0
    
     func gotoQuiz() {
+        selectTab = 0
         path.append(Destination.startQuiz)
     }
    
     func gotoHome() {
+        path = NavigationPath()
+        selectTab = 0
+    }
+    
+    func gotoProfile() {
         path = NavigationPath()
         selectTab = 0
     }
@@ -29,5 +35,4 @@ enum Destination: Hashable {
     case reviewResult(quiz: Quiz)
     case startQuiz
     case complete
-    
 }

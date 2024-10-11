@@ -5,136 +5,6 @@
 ////  Created by Susnata Basak on 9/8/24.
 ////
 //
-//import SwiftUI
-//import FirebaseFirestore
-//import FirebaseAuth
-//import FirebaseCore
-//
-//struct SignupView: View {
-//    private static var SIGN_IN_PAGE = 0
-//    private static var QUIZ_VIEW_PAGE = 1
-//
-//    @State private var path = [Int]()
-//
-//    @State var isUsernameValid:Bool = false
-//
-//    @State var name:String = ""
-//    @State var email:String = ""
-//    @State var password:String = ""
-//    @State var transitionToStartQuizView = false
-//    @State var showSignInView = false
-//
-//    @Environment(UserManager.self) var userManager
-//
-//    var body: some View {
-//
-//        NavigationStack {
-//
-//            Form {
-//                Section {
-//                    InputTextField(
-//                        labelName: "Name", imageName: "person", input: $name)
-//
-//                    InputTextField(
-//                        labelName: "Email", imageName: "person", input: $email)
-//
-//                    SecureField("Password", text: $password)
-//                        .mySecureField()
-//
-//                }.padding()
-//
-//                Section {
-//                    HStack {
-//                        Spacer()
-//
-//                        Button("Signup") {
-//                            signup()
-//                        }
-//
-//                        Spacer()
-//                    }
-//                }
-//
-//                Section {
-//
-//                    HStack {
-//                        Text("Already have an account")
-//                            .plain()
-//
-//                        NavigationLink(destination: SigninView()) {
-//                            Text("sign in")
-//                                .foregroundColor(.blue)
-//                                .font(.body)
-//                                .border(.black)
-//                        }
-//                    }
-//                }
-//            }
-//            .toolbar {
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    Button("Sign Out") {
-//                        userManager.signOut(completion: {error in
-//                            print("Error = \(String(describing: error))")
-//                        })
-//                    }.opacity(userManager.isUserLoggedIn() ? 1 : 0)
-//                }
-//            }
-//        }
-//    }
-//
-//    func signup() {
-//        userManager.createAccount(
-//            name: name,
-//            email: email,
-//            password: password)
-//        path = [1]
-//    }
-//}
-//
-//struct InputTextField : View {
-//    var labelName: String
-//    var imageName: String
-//
-//    @Binding var input:String
-//
-//    var body: some View {
-//        HStack {
-//            Image(systemName: imageName)
-//            TextField(labelName, text: $input)
-//                .padding(4)
-//                .font(.body)
-//                .cornerRadius(3)
-//        }
-//    }
-//}
-//
-//extension SecureField {
-//    func mySecureField() -> some View {
-//        self.padding(2)
-//            .font(.body)
-//            .cornerRadius(3)
-//    }
-//}
-//
-//extension Text {
-//    func plain() -> some View {
-//        modifier(PlainSecureField())
-//    }
-//}
-//
-//struct PlainSecureField : ViewModifier {
-//    func body(content: Content) -> some View {
-//        content
-//            .font(.title)
-//            .padding(4)
-//            .cornerRadius(3.0)
-//    }
-//}
-//
-//#Preview {
-//    return SignupView(name: "", email: "", password: "")
-//}
-
 
 import SwiftUI
 import FirebaseFirestore
@@ -153,8 +23,6 @@ struct SignupView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var userManager: UserManager
     
-//    @StateObject var navManager = NavigationManager()
-
     var body: some View {
         
         NavigationStack {
@@ -227,7 +95,6 @@ struct SignupView: View {
            
             .padding()
         }
-//        .environmentObject(navManager)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -268,29 +135,6 @@ struct SignupView: View {
         showAlert = true
     }
 }
-
-//struct InputField: View {
-//    let icon: String
-//    let placeholder: String
-//    @Binding var text: String
-//    var isSecure: Bool = false
-//
-//    var body: some View {
-//        HStack {
-//            Image(systemName: icon)
-//                .foregroundColor(.secondary)
-//
-//            if isSecure {
-//                SecureField(placeholder, text: $text)
-//            } else {
-//                TextField(placeholder, text: $text)
-//            }
-//        }
-//        .padding()
-//        .background(Color(.systemGray6))
-//        .cornerRadius(10)
-//    }
-//}
 
 struct SignupView_Previews: PreviewProvider {
     static var previews: some View {
