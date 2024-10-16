@@ -39,9 +39,11 @@ class UserManager: ObservableObject {
                                 self.signedIn = true
                             }
                         } else {
+                            self.signedIn = false
                             print("Document does not exist for user: \(user!.uid)")
                         }
                     } catch {
+                        self.signedIn = false
                         print("Error finding User data \(user!.uid)")
                     }
                 }

@@ -23,40 +23,18 @@ class Session: ObservableObject, Hashable {
         }
     }
     
-    // TODO: move this function
-    var score: (totalCorrect: Int, totalIncorrect: Int) {
-        get {
-            var totalCorrect = 0, totalIncorrect = 0
-            
-            guard quiz != nil else {
-                print("Quiz is nil!")
-                return (totalCorrect: 0, totalIncorrect: 0)
-            }
-            
-            for (problemId, answer) in quiz!.answers {
-                guard let problem = quiz!.getProblemById(problemId: problemId) else {
-                    print("Can't find problem with id \(problemId)")
-                    return (totalCorrect: 0, totalIncorrect: 0)
-                }
-                
-                if (problem.isAnswerCorrect(userInput: answer)) {
-                    totalCorrect = totalCorrect + 1
-                } else {
-                    totalIncorrect = totalIncorrect + 1
-                }
-            }
-            
-            return (totalCorrect, totalIncorrect)
-        }
-    }
+//    // TODO: move this function
+//    var score: Score {
+//        return quiz!.computeScore()
+//    }
     
     func saveScore() async {
-        let currScore = score
-        quiz!.score = Score(totalCorrect: currScore.totalCorrect, totalIncorrect: currScore.totalIncorrect)
-        quiz?.status = .completed
-        
-        Task {
-            await QuizDao.shared.update(quiz!)
+        if let q = quiz {
+            q.status = .completed
+            
+            Task {
+                await QuizDao.shared.update(q)
+            }
         }
     }
     

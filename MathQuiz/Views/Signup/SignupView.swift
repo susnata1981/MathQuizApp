@@ -25,7 +25,7 @@ struct SignupView: View {
     
     var body: some View {
         
-        NavigationStack {
+        NavigationView {
             VStack(spacing: 20) {
                 Text("Create Account")
                     .font(.largeTitle)
@@ -95,6 +95,7 @@ struct SignupView: View {
            
             .padding()
         }
+        .navigationBarBackButtonHidden()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

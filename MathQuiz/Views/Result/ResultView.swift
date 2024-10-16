@@ -5,122 +5,6 @@
 //  Created by Susnata Basak on 8/31/24.
 //
 
-//import SwiftUI
-//
-//struct ResultView: View {
-//    @EnvironmentObject var quizVM: QuizViewModel
-//    @EnvironmentObject var session: Session
-//    @EnvironmentObject var navigationManager: NavigationManager
-//    
-//    @State private var startNewGame = false
-//    @State private var reviewResult = false
-//    
-//    private var score: Int {
-//        get {
-//            let (tc, ti) = session.score
-//            return (100 * tc)/(tc + ti)
-//        }
-//    }
-//    
-//    enum Destination2: Hashable {
-//        case ReviewResultView(quiz: Quiz)
-//        case StartQuizView
-//        case CompleteReview
-//    }
-//    
-//    
-//    var body: some View {
-//        let _ = print("ResultView init")
-//        ZStack {
-//            Color.gray.opacity(0.1).edgesIgnoringSafeArea(.all)
-//            
-//            VStack(spacing: 30) {
-//                resultHeader
-//                scoreCard
-//                actionButtons
-//            }
-//            .padding()
-//        }
-//        .navigationDestination(isPresented: $startNewGame) {
-//            StartQuizView()
-//        }
-//        .onAppear {
-//            Task { await session.saveScore() }
-//        }
-//        .navigationDestination(isPresented: $reviewResult) {
-//            ReviewResultView(quiz: session.quiz!)
-//        }
-//    }
-//    
-//    private var resultHeader: some View {
-//        Text("Quiz Results")
-//            .font(.system(size: 36, weight: .bold, design: .rounded))
-//            .foregroundColor(.primary)
-//            .padding(.top, 50)
-//    }
-//    
-//    private var scoreCard: some View {
-//        VStack(spacing: 20) {
-//            HStack {
-//                Text("You scored")
-//                    .font(.title3)
-//                    .fontWeight(.bold)
-//                
-//                Text("\(score)%")
-//                    .font(.system(size: 72.0))
-//                    .foregroundColor(score > 70 ? .cyan : .red.opacity(0.8))
-//                    .fontWeight(.bold)
-//            }
-//        }.padding()
-//    }
-//    
-//    private func scoreRow(title: String, score: Int, color: Color) -> some View {
-//        HStack {
-//            Text(title)
-//                .font(.headline)
-//            Spacer()
-//            Text("\(score)")
-//                .font(.title2)
-//                .fontWeight(.bold)
-//                .foregroundColor(color)
-//        }
-//    }
-//    
-//    private var actionButtons: some View {
-//        VStack(spacing: 15) {
-//            Button(action: { startNewGame = true }) {
-//                Text("Start New Game")
-//                    .frame(maxWidth: .infinity)
-//                    .padding()
-//                    .background(Color("primary"))
-//                    .foregroundColor(.white)
-//                    .cornerRadius(10)
-//            }
-//            
-//            Button(action: { reviewResult = true }) {
-//                Text("Review Results")
-//                    .frame(maxWidth: .infinity)
-//                    .padding()
-//                    .background(Color.white)
-//                    .foregroundColor(Color("primary"))
-//                    .cornerRadius(10)
-//                    .overlay(
-//                        RoundedRectangle(cornerRadius: 10)
-//                            .stroke(Color.primary, lineWidth: 2)
-//                    )
-//            }
-//        }
-//        .padding(.bottom, 50)
-//    }
-//}
-//
-////#Preview {
-////
-////    return ResultView()
-////        .environmentObject(QuizViewModel())
-////        .environmentObject(Session())
-////
-////}
 
 import SwiftUI
 
@@ -132,11 +16,9 @@ struct ResultView: View {
     
     @State private var startNewGame = false
     @State private var reviewResult = false
+    @State private var showAnimation = true
+    @State private var score: Int = 0
     
-    private var score: Int {
-        let (tc, ti) = session.score
-        return (100 * tc) / (tc + ti)
-    }
     
     var body: some View {
         ZStack {
@@ -148,6 +30,14 @@ struct ResultView: View {
                 actionButtons
             }
             .padding()
+            
+            if showAnimation {
+                if score >= 80 {
+                    ConfettiView()
+                } else {
+                    PulseAnimation()
+                }
+            }
         }
         .navigationDestination(isPresented: $startNewGame) {
             StartQuizView()
@@ -155,11 +45,60 @@ struct ResultView: View {
         .navigationDestination(isPresented: $reviewResult) {
             ReviewResultView(quiz: session.quiz!)
         }
-        .onAppear {
-            Task { await session.saveScore() }
+        .onAppear{
+            score = session.quiz?.score?.percentScore ?? 0
         }
+//        .onAppear {
+//            session.quiz!.computeScore()
+//            score = session.quiz!.score?.percentScore ?? 0
+//            Task { await session.saveScore() }
+//        }
     }
     
+    struct ConfettiView: View {
+        @State private var animate = false
+        
+        var body: some View {
+            ZStack {
+                ForEach(0..<50) { _ in
+                    Circle()
+                        .fill(Color.random)
+                        .frame(width: 15, height: 15)
+                        .position(x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+                                  y: animate ? UIScreen.main.bounds.height + 100 : -100)
+                        .animation(
+                            Animation.linear(duration: Double.random(in: 2...5))
+                                .repeatForever(autoreverses: false),
+                            value: animate
+                        )
+                }
+            }
+            .onAppear {
+                animate = true
+            }
+        }
+    }
+
+    struct PulseAnimation: View {
+        @State private var animate = false
+        
+        var body: some View {
+            Circle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(width: 200, height: 200)
+                .scaleEffect(animate ? 1.2 : 0.8)
+                .opacity(animate ? 0 : 1)
+                .animation(
+                    Animation.easeInOut(duration: 1.5)
+                        .repeatForever(autoreverses: false),
+                    value: animate
+                )
+                .onAppear {
+                    animate = true
+                }
+        }
+    }
+
     private var resultHeader: some View {
         Text("Quiz Results")
             .font(theme.fonts.large)
@@ -191,12 +130,53 @@ struct ResultView: View {
     }
 }
 
-struct ResultView_Previews: PreviewProvider {
-    static var previews: some View {
-        ResultView()
-            .environmentObject(QuizViewModel())
-            .environmentObject(Session())
-            .environmentObject(NavigationManager())
-            .environmentObject(Theme.theme1) // Use your default theme here
+//struct ResultView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Group {
+//            ResultView()
+//                .environmentObject(mockQuizViewModel(score: (8, 2))) // 80% score
+//                .environmentObject(mockSession(score: (8, 2)))
+//                .environmentObject(NavigationManager())
+//                .environmentObject(Theme.theme1)
+//                .previewDisplayName("High Score (Theme 1)")
+//            
+//            ResultView()
+//                .environmentObject(mockQuizViewModel(score: (6, 4))) // 60% score
+//                .environmentObject(mockSession(score: (6, 4)))
+//                .environmentObject(NavigationManager())
+//                .environmentObject(Theme.theme2)
+//                .previewDisplayName("Low Score (Theme 2)")
+//            
+//            ResultView()
+//                .environmentObject(mockQuizViewModel(score: (10, 0))) // 100% score
+//                .environmentObject(mockSession(score: (10, 0)))
+//                .environmentObject(NavigationManager())
+//                .environmentObject(Theme.theme1)
+//                .previewDisplayName("Perfect Score")
+//                .environment(\.colorScheme, .dark)
+//        }
+//    }
+//    
+//    static func mockQuizViewModel(score: (Int, Int)) -> QuizViewModel {
+//        let vm = QuizViewModel()
+//        // Set up any necessary properties in QuizViewModel
+//        return vm
+//    }
+//    
+//    static func mockSession(score: (Int, Int)) -> Session {
+//        let session = Session()
+//        session.score = score
+//        session.quiz = Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 5)
+//        return session
+//    }
+//}
+
+extension Color {
+    static var random: Color {
+        return Color(
+            red: .random(in: 0...1),
+            green: .random(in: 0...1),
+            blue: .random(in: 0...1)
+        )
     }
 }

@@ -43,14 +43,20 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
     var answers = [Int:String]()
     var score: Score?
     var status: CompletionStatus = .notStarted
+    var points: Int
     var createdAt = Date()
     
     init(operation: MathOperation,
          difficultyLevel: DifficultyLevel,
-         totalProblems: Int) {
+         totalProblems: Int,
+         createdAt: Date = Date()) {
         self.operation = operation
         self.difficultyLevel = difficultyLevel
         self.totalProblems = totalProblems
+        self.createdAt = createdAt
+        self.score = Score(totalCorrect: 0, totalIncorrect: 0)
+        self.points = 0
+
         self.problems = (1...totalProblems).map { index in
             
             var problem = SimpleQuizGenerator.shared.generate(
@@ -62,6 +68,24 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
         }
     }
     
+    func addPointsForQuiz(correctAnswers: Int, totalQuestions: Int, difficulty: DifficultyLevel) {
+            let percentageCorrect = Double(correctAnswers) / Double(totalQuestions)
+            let basePoints = Int(Double(totalQuestions) * percentageCorrect * 10)
+            
+            let difficultyMultiplier: Double
+            switch difficulty {
+            case .easy:
+                difficultyMultiplier = 1.0
+            case .medium:
+                difficultyMultiplier = 1.5
+            case .hard:
+                difficultyMultiplier = 2.0
+            }
+            
+            let earnedPoints = Int(Double(basePoints) * difficultyMultiplier)
+            self.points += earnedPoints
+        }
+    
     static func createAndSave(
         user: User,
         operation: MathOperation,
@@ -72,6 +96,27 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
             print("About to save quiz")
         await q.save(user)
         return q
+    }
+    
+    func computeScore() {
+        var totalCorrect = 0, totalIncorrect = 0
+        
+        
+        for (problemId, answer) in answers {
+            guard let problem = getProblemById(problemId: problemId) else {
+                print("Can't find problem with id \(problemId)")
+                self.score = Score(totalCorrect: 0, totalIncorrect: 0)
+                return
+            }
+            
+            if (problem.isAnswerCorrect(userInput: answer)) {
+                totalCorrect = totalCorrect + 1
+            } else {
+                totalIncorrect = totalIncorrect + 1
+            }
+        }
+        self.score = Score(totalCorrect: totalCorrect, totalIncorrect: totalIncorrect)
+//        return Score(totalCorrect: totalCorrect, totalIncorrect: totalIncorrect)
     }
     
     func getProblem(index: Int) -> Problem {
@@ -93,13 +138,9 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
         }
     }
     
-//    var description: String {
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.timeStyle = .medium
-//        let formattedDate = dateFormatter.string(from: self.createdAt)
-//        
-//        return "Status: \(self.status) Score: \(self.score.percentScore ?? 0)"
-//    }
+    func update() async {
+        await QuizDao.shared.update(self)
+    }
     
     var getPercentageScore: Int {
         if let score = self.score {

@@ -24,18 +24,14 @@ class QuizViewModel: ObservableObject {
         didSet {
             self.ctx = Context()
             self.ctx.currentProblem = quiz!.getProblem(index: 0)
-//            self.currProblem = quiz!.getProblem(index: 0)
         }
     }
-    
-//    @Published var currProblem: Problem?
     
     var session: Session? {
         didSet {
             self.quiz = session!.quiz
             self.ctx = Context()
             self.ctx.currentProblem = quiz!.getProblem(index: ctx.currentIndex)
-//            self.currProblem = quiz!.getProblem(index: ctx.currentIndex)
         }
     }
     
@@ -59,11 +55,6 @@ class QuizViewModel: ObservableObject {
     }
     
     func handleChoiceSelection(choice: MultiChoiceItem) {
-//        guard let _ = self.session else {
-//            print("Session not set in QuizViewModel")
-//            return
-//        }
-        
         ctx.selectedChoice = choice
         ctx.hasUserAnswered = true
         isSelectedChoiceCorrect = isSelectionCorrect(choice)
@@ -119,13 +110,21 @@ class QuizViewModel: ObservableObject {
         }
         
         if hasFinishedQuiz() {
-            // Finished Quiz
+            // Finished Quiz, Update it
+            Task {
+                if let q = quiz {
+                    q.status = .completed
+                    q.computeScore()
+                    await q.update()
+                }
+            }
             showResults = true
         } else {
             // Next Question
             getNextProblem()
         }
     }
+    
     
     func setAnswer(problem: Problem, answer: Answer) -> Void {
         quiz!.answers[problem.id!] = answer.value
@@ -144,15 +143,10 @@ class QuizViewModel: ObservableObject {
             return
         }
         
-//        guard let temp = quiz!.getProblem(index: ctx.currentIndex) else {
-//            print("Error: Failed to fetch problem for index: \(ctx.currentIndex)")
-//            return
-//        }
         ctx.currentProblem = quiz!.getProblem(index: ctx.currentIndex)
         ctx.selectedAnswer = nil
         ctx.selectedChoice = nil
         ctx.hasUserAnswered = false
-//        currProblem = quiz!.getProblem(index: ctx.currentIndex) 
     }
     
 }

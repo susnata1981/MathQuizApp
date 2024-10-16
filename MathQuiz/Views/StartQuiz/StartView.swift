@@ -9,10 +9,49 @@ import SwiftUI
 
 struct StartView: View {
     @EnvironmentObject var userManager: UserManager
+    @StateObject var quizNavManager = NavigationManager()
+    @StateObject var profileNavManager = NavigationManager()
 
     var body: some View {
         if (userManager.isUserLoggedIn()) {
-            StartQuizView()
+            
+            TabView {
+                NavigationStack(path: $quizNavManager.path) {
+                    StartQuizView()
+                        .navigationDestination(for: Destination.self) { dest in
+                            switch dest {
+                            case .startQuiz:
+                                QuizView()
+                            case .complete:
+                                CompletedReviewView()
+                            case .reviewResult(let quiz):
+                                ReviewResultView(quiz: quiz)
+                            }
+                        }
+                }
+                .environmentObject(quizNavManager)
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                
+                NavigationStack(path: $profileNavManager.path) {
+                    ProfileView()
+                        .navigationDestination(for: Destination.self) { dest in
+                            switch dest {
+                            case .reviewResult(let quiz):
+                                ReviewResultView(quiz: quiz)
+                            case .complete:
+                                CompletedReviewView()
+                            case .startQuiz:
+                                QuizView()
+                            }
+                        }
+                }
+                .environmentObject(profileNavManager)
+                .tabItem {
+                    Label("Profile", systemImage: "person.crop.circle.fill")
+                }
+            }
         } else {
             SigninView()
         }

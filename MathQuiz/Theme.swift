@@ -26,11 +26,11 @@ class Theme: ObservableObject {
         colors: ThemeColors(
             primary: Color("Theme1Primary"),
             secondary: Color("Theme1Secondary"),
-            background: Color("Theme1Background"),
+            background: Color("Theme1Background"), // #FFF9C4
             text: Color("Theme1Text"),
             accent: Color("Theme1Accent"),
             success: Color("Theme1Accent"),
-            error: Color.red
+            error: Color.red.opacity(0.7)
         ),
         fonts: ThemeFonts(
             small: Font.custom("ComicSansMS", size: 12),
@@ -49,7 +49,7 @@ class Theme: ObservableObject {
             text: Color("Theme2Text"),
             accent: Color("Theme2Accent"),
             success: Color("Theme2Accent"),
-            error: Color.red
+            error: Color.red.opacity(0.7)
         ),
         fonts: ThemeFonts(
             small: Font.custom("Papyrus", size: 12),

@@ -22,7 +22,8 @@ class StartQuizViewModel {
     
     var selectedOperation: MathOperation?
     var selectedDiffilcultyLevel: DifficultyLevel = .easy
-    
+    var numberOfProblems: Int = 10
+
     func validate() -> Bool {
         hasError = false
         
@@ -49,7 +50,7 @@ class StartQuizViewModel {
             user: user!,
             operation: selectedOperation!,
             level: selectedDiffilcultyLevel,
-            numProblems: StartQuizViewModel.totalProblems)
+            numProblems: numberOfProblems)
         
         return quiz
     }

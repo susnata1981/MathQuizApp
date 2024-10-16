@@ -17,81 +17,44 @@ struct StartQuizView: View {
     @State private var viewModel = StartQuizViewModel()
     @State private var showCountdown = false
     
-    @StateObject var quizNavManager = NavigationManager()
-    @StateObject var profileNavManager = NavigationManager()
+    @EnvironmentObject var quizNavManager: NavigationManager
+    @EnvironmentObject var profileNavManager: NavigationManager
     
     var body: some View {
-        TabView(selection: $quizNavManager.selectTab) {
-            NavigationStack(path: $quizNavManager.path) {
-                mainContent
-                    .navigationDestination(for: Destination.self) { dest in
-                        switch dest {
-                        case .startQuiz:
-                            QuizView()
-                        case .complete:
-                            CompletedReviewView()
-                        case .reviewResult(let quiz):
-                            ReviewResultView(quiz: quiz)
-                        }
-                    }
-            }
-            .environmentObject(quizNavManager)
-            .tabItem {
-                Label("Home", systemImage: "house.fill")
-            }
-            
-            NavigationStack(path: $profileNavManager.path) {
-                ProfileView()
-                    .navigationDestination(for: Destination.self) { dest in
-                        switch dest {
-                        case .reviewResult(let quiz):
-                            ReviewResultView(quiz: quiz)
-                        case .complete:
-                            CompletedReviewView()
-                        case .startQuiz:
-                            QuizView()
-                        }
-                    }
-            }
-            .environmentObject(profileNavManager)
-            .tabItem {
-                Label("Profile", systemImage: "person.crop.circle.fill")
-            }
-        }
-        .onAppear(perform: setupSession)
-        .accentColor(theme.colors.accent)
+        mainContent
+            .onAppear(perform: setupSession)
+            .background(theme.colors.background)
+            .accentColor(theme.colors.accent)
     }
     
     private var mainContent: some View {
-        VStack {
-            ZStack {
+        ScrollView {
+            VStack {
                 theme.colors.background.ignoresSafeArea()
                 
-                if showCountdown {
-                    MyCountDownView(showCountdown: $showCountdown) {
-                        Task {
-                            print("Animation finished, waiting for quiz handler")
-                            session.quiz = await viewModel.handleStartQuiz()
-                            showCountdown = false
-                            quizNavManager.gotoQuiz()
+                ZStack {
+                    
+                    if showCountdown {
+                        MyCountDownView(showCountdown: $showCountdown) {
+                            Task {
+                                print("Animation finished, waiting for quiz handler")
+                                session.quiz = await viewModel.handleStartQuiz()
+                                showCountdown = false
+                                quizNavManager.gotoQuiz()
+                            }
                         }
+                        .transition(.opacity)
                     }
-                    .transition(.opacity)
+                    
+                    VStack(spacing: 30) {
+                        titleView
+                        ChooseGameType(viewModel: viewModel)
+                        DifficultyPicker(viewModel: viewModel)
+                        NumberOfProblemsPicker(viewModel: viewModel)
+                        startButton
+                    }.padding()
                 }
-                
-                VStack(spacing: 30) {
-                    titleView
-                    ChooseGameType(viewModel: viewModel)
-                    DifficultyPicker(viewModel: viewModel)
-                    startButton
-                }
-                .padding()
-            }
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    signOutButton
-//                }
-//            }
+            }.padding(.bottom, 16)
         }
     }
     
@@ -105,6 +68,37 @@ struct StartQuizView: View {
             Text("Choose Game")
                 .font(theme.fonts.bold)
                 .foregroundColor(theme.colors.primary)
+        }
+    }
+    
+    struct NumberOfProblemsPicker: View {
+        @State var viewModel: StartQuizViewModel
+        @EnvironmentObject var theme: Theme
+        
+        let problemOptions = [5, 10, 15, 20]
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Number of Problems")
+                    .font(theme.fonts.bold)
+                    .foregroundColor(theme.colors.text)
+                
+                Picker("Select Number of Problems", selection: $viewModel.numberOfProblems) {
+                    ForEach(problemOptions, id: \.self) { number in
+                        Text("\(number)")
+                            .tag(number)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .background(theme.colors.background)
+            }
+            .padding()
+            .background(theme.colors.background)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(theme.colors.primary.opacity(0.2), lineWidth: 1)
+            )
         }
     }
     
@@ -210,6 +204,10 @@ struct DifficultyPicker: View {
             .background(theme.colors.background)
         }
         .padding()
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(theme.colors.primary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 

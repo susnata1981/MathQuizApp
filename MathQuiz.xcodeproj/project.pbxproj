@@ -10,6 +10,7 @@
 		784AEB832CB64C2600B4570D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB822CB64C2600B4570D /* Theme.swift */; };
 		784AEB852CB64C5300B4570D /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB842CB64C5300B4570D /* HistoryView.swift */; };
 		784AEB872CB64C6700B4570D /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB862CB64C6700B4570D /* ButtonStyles.swift */; };
+		784AEB892CBC5F4000B4570D /* QuizRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB882CBC5F4000B4570D /* QuizRowView.swift */; };
 		787339222C8E9E9900F66335 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787339212C8E9E9900F66335 /* SignupView.swift */; };
 		78947E922C83794A002FA20D /* Quiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78947E912C83794A002FA20D /* Quiz.swift */; };
 		78947E942C8389E2002FA20D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78947E932C8389E2002FA20D /* User.swift */; };
@@ -76,6 +77,7 @@
 		784AEB822CB64C2600B4570D /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = MathQuiz/Theme.swift; sourceTree = "<group>"; };
 		784AEB842CB64C5300B4570D /* HistoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryView.swift; path = MathQuiz/Views/History/HistoryView.swift; sourceTree = "<group>"; };
 		784AEB862CB64C6700B4570D /* ButtonStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ButtonStyles.swift; path = MathQuiz/Views/Common/ButtonStyles.swift; sourceTree = "<group>"; };
+		784AEB882CBC5F4000B4570D /* QuizRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizRowView.swift; sourceTree = "<group>"; };
 		787339212C8E9E9900F66335 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
 		78947E912C83794A002FA20D /* Quiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quiz.swift; sourceTree = "<group>"; };
 		78947E932C8389E2002FA20D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -230,6 +232,7 @@
 		78A5D7CA2C82D5FA0021DB61 = {
 			isa = PBXGroup;
 			children = (
+				784AEB882CBC5F4000B4570D /* QuizRowView.swift */,
 				784AEB862CB64C6700B4570D /* ButtonStyles.swift */,
 				784AEB842CB64C5300B4570D /* HistoryView.swift */,
 				784AEB822CB64C2600B4570D /* Theme.swift */,
@@ -453,6 +456,7 @@
 				789EB5902CA9B1E400D7B81E /* QuizGenerator.swift in Sources */,
 				784AEB852CB64C5300B4570D /* HistoryView.swift in Sources */,
 				789EB5822C948C4400D7B81E /* StartQuizViewModel.swift in Sources */,
+				784AEB892CBC5F4000B4570D /* QuizRowView.swift in Sources */,
 				78947EA22C86DBFB002FA20D /* ProblemSectionView.swift in Sources */,
 				78947E922C83794A002FA20D /* Quiz.swift in Sources */,
 				78947EA02C86427B002FA20D /* QuizViewModel.swift in Sources */,
