@@ -89,7 +89,6 @@ struct SignupView: View {
             .navigationDestination(isPresented: Binding(get: {
                 userManager.isUserLoggedIn()
             }, set: { _ in } )) {
-                let _ = print("Navigation destination: SQV")
                 StartQuizView()
             }
            
@@ -121,14 +120,14 @@ struct SignupView: View {
     }
     
     private func signup() {
-        userManager.createAccount(name: name, email: email, password: password) { uid, err in
-            if let error = err {
-                showAlert(message: "Error creating account: \(error.localizedDescription)")
-            } else {
-                // Handle successful signup, e.g., navigate to the main app view
-                print(uid!)
-            }
-        }
+//        userManager.createAccount(name: name, email: email, password: password) { uid, err in
+//            if let error = err {
+//                showAlert(message: "Error creating account: \(error.localizedDescription)")
+//            } else {
+//                // Handle successful signup, e.g., navigate to the main app view
+//                print(uid!)
+//            }
+//        }
     }
     
     private func showAlert(message: String) {

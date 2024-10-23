@@ -26,7 +26,7 @@ class QuizDao {
 
             do {
                 let db = Firestore.firestore()
-                let quizSnapshot = try await db.collection("Quizzes").whereField("uid", isEqualTo: user.uid)
+                let quizSnapshot = try await db.collection("Quizzes").whereField("uid", isEqualTo: user.username)
                     .order(by: "createdAt", descending: true)
                     .getDocuments()
                 
@@ -50,17 +50,17 @@ class QuizDao {
     }
     
     func save(_ user:User, _ quiz: Quiz) async throws -> String? {
-        guard let uid = user.uid else {
-            print("User uid not set")
-            throw AppError.UserNotLoggedIn
-        }
+//        guard let uid = user.username else {
+//            print("User uid not set")
+//            throw AppError.UserNotLoggedIn
+//        }
         
         let task = Task {
             do {
                 let db = Firestore.firestore()
                 let newQuizRef = try db.collection("Quizzes").addDocument(from: quiz)
                 
-                print("Saved new quiz: \(newQuizRef.documentID) uid: \(uid)")
+                print("Saved new quiz: \(newQuizRef.documentID) for user: \(user)")
                 return newQuizRef.documentID
             } catch {
                 print("Failed to save quiz to firestore \(error)")

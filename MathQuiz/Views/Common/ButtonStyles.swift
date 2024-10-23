@@ -7,7 +7,6 @@ struct PrimaryButtonStyle: ButtonStyle {
         configuration.label
             .font(theme.fonts.large)
             .fontWeight(.bold)
-//            .foregroundColor(theme.colors.text)
             .foregroundColor(.white)
 
             .padding(.horizontal, 40)
@@ -25,12 +24,12 @@ struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(theme.fonts.bold)
-            .foregroundColor(theme.colors.primary)
+            .foregroundColor(theme.colors.accent)
             .padding(.horizontal, 30)
             .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(theme.colors.primary, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(theme.colors.accent, lineWidth: 2)
             )
             .scaleEffect(configuration.isPressed ? 0.95 : 1)
     }

@@ -17,12 +17,14 @@ struct ResultView: View {
     @State private var startNewGame = false
     @State private var reviewResult = false
     @State private var showAnimation = true
-    @State private var score: Int = 0
+    @State var score: Int = 0
     
+    init(score: Int = 0) {
+        self.score = score
+    }
     
     var body: some View {
         ZStack {
-            theme.colors.background.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 30) {
                 resultHeader
@@ -39,6 +41,7 @@ struct ResultView: View {
                 }
             }
         }
+        .navigationBarBackButtonHidden()
         .navigationDestination(isPresented: $startNewGame) {
             StartQuizView()
         }
@@ -48,11 +51,6 @@ struct ResultView: View {
         .onAppear{
             score = session.quiz?.score?.percentScore ?? 0
         }
-//        .onAppear {
-//            session.quiz!.computeScore()
-//            score = session.quiz!.score?.percentScore ?? 0
-//            Task { await session.saveScore() }
-//        }
     }
     
     struct ConfettiView: View {
@@ -130,47 +128,6 @@ struct ResultView: View {
     }
 }
 
-//struct ResultView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Group {
-//            ResultView()
-//                .environmentObject(mockQuizViewModel(score: (8, 2))) // 80% score
-//                .environmentObject(mockSession(score: (8, 2)))
-//                .environmentObject(NavigationManager())
-//                .environmentObject(Theme.theme1)
-//                .previewDisplayName("High Score (Theme 1)")
-//            
-//            ResultView()
-//                .environmentObject(mockQuizViewModel(score: (6, 4))) // 60% score
-//                .environmentObject(mockSession(score: (6, 4)))
-//                .environmentObject(NavigationManager())
-//                .environmentObject(Theme.theme2)
-//                .previewDisplayName("Low Score (Theme 2)")
-//            
-//            ResultView()
-//                .environmentObject(mockQuizViewModel(score: (10, 0))) // 100% score
-//                .environmentObject(mockSession(score: (10, 0)))
-//                .environmentObject(NavigationManager())
-//                .environmentObject(Theme.theme1)
-//                .previewDisplayName("Perfect Score")
-//                .environment(\.colorScheme, .dark)
-//        }
-//    }
-//    
-//    static func mockQuizViewModel(score: (Int, Int)) -> QuizViewModel {
-//        let vm = QuizViewModel()
-//        // Set up any necessary properties in QuizViewModel
-//        return vm
-//    }
-//    
-//    static func mockSession(score: (Int, Int)) -> Session {
-//        let session = Session()
-//        session.score = score
-//        session.quiz = Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 5)
-//        return session
-//    }
-//}
-
 extension Color {
     static var random: Color {
         return Color(
@@ -180,3 +137,45 @@ extension Color {
         )
     }
 }
+
+struct ResultView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            ResultView(score: 10)
+                .environmentObject(mockQuizViewModel(score: (8, 2))) // 80% score
+                .environmentObject(mockSession(score: (8, 2)))
+                .environmentObject(NavigationManager())
+                .environmentObject(Theme.theme1)
+                .previewDisplayName("High Score (Theme 1)")
+            
+            ResultView(score: 80)
+                .environmentObject(mockQuizViewModel(score: (6, 4))) // 60% score
+                .environmentObject(mockSession(score: (6, 4)))
+                .environmentObject(NavigationManager())
+                .environmentObject(Theme.theme2)
+                .previewDisplayName("Low Score (Theme 2)")
+            
+            ResultView(score: 100)
+                .environmentObject(mockQuizViewModel(score: (10, 0))) // 100% score
+                .environmentObject(mockSession(score: (10, 0)))
+                .environmentObject(NavigationManager())
+                .environmentObject(Theme.theme1)
+                .previewDisplayName("Perfect Score")
+                .environment(\.colorScheme, .dark)
+        }
+    }
+    
+    static func mockQuizViewModel(score: (Int, Int)) -> QuizViewModel {
+        let vm = QuizViewModel()
+        // Set up any necessary properties in QuizViewModel
+        return vm
+    }
+    
+    static func mockSession(score: (Int, Int)) -> Session {
+        let session = Session()
+//        session.score = score
+        session.quiz = Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 5)
+        return session
+    }
+}
+

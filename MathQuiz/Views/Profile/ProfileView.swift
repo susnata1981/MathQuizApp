@@ -15,12 +15,7 @@ struct ProfileView: View {
     
     var body: some View {
         ZStack {
-            theme.colors.background.edgesIgnoringSafeArea(.all)
-            
-//            VStack {
-//                headerView
-//                quizListView
-//            }
+//            theme.colors.background.edgesIgnoringSafeArea(.all)
             
             HistoryView(quizzes: profileVM.quizzes)
         }
@@ -51,7 +46,7 @@ struct ProfileView: View {
                 .font(theme.fonts.large)
                 .foregroundColor(theme.colors.primary)
             
-            Text(userManager.user?.email ?? "")
+            Text(userManager.user?.username ?? "")
                 .font(theme.fonts.regular)
                 .foregroundColor(theme.colors.secondary)
         }

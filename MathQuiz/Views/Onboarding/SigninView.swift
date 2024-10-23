@@ -26,7 +26,7 @@ struct SigninView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Text("New Sign In")
+                Text("Sign In")
                     .font(theme.fonts.large)
                     .fontWeight(.bold)
                     .foregroundColor(theme.colors.accent)
@@ -55,6 +55,12 @@ struct SigninView: View {
                     }
                 }.padding(.horizontal)
                 
+                Text(errorMessage)
+                    .disabled(!showErrorMessage)
+                    .font(theme.fonts.regular)
+                    .fontWeight(.bold)
+                    .foregroundColor(theme.colors.error)
+                
                 Button(action: signin) {
                     if isSigningIn {
                         ProgressView()
@@ -72,18 +78,14 @@ struct SigninView: View {
                 .padding(.horizontal)
                 .disabled(!isFormValid || isSigningIn)
                 
-                Text(errorMessage)
-                    .disabled(!showErrorMessage)
-                    .font(theme.fonts.regular)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.colors.error)
+              
                 
                 HStack {
                     Text("Do not have an account?")
-                    NavigationLink("Sign Up", destination: NewSignupView())
+                    NavigationLink("Sign Up", destination: SignupView())
                         .foregroundColor(theme.colors.accent)
                 }
-                .font(theme.fonts.caption)
+                .font(theme.fonts.regular)
             }.navigationDestination(
                 isPresented: Binding(
                     get: { userManager.isUserLoggedIn() },

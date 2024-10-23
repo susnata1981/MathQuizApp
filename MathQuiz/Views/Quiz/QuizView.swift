@@ -24,10 +24,6 @@ struct QuizView: View {
     
     var body: some View {
         ZStack {
-            // Background
-            theme.colors.background
-                .edgesIgnoringSafeArea(.all)
-            
             VStack {
                 Spacer()
                 
@@ -44,6 +40,8 @@ struct QuizView: View {
                             isReviewMode: false)
                     }
                 }.padding()
+                
+                Spacer()
                 
                 nextButtonView
                 
@@ -77,7 +75,7 @@ struct QuizView: View {
 struct QuizView_Previews: PreviewProvider {
     static var previews: some View {
         QuizView()
-            .environment(User(uid: "AABSBS", name: "Adi", email: "adi@gmail.com"))
+            .environment(User(username: "adipai", pin: "1111", name: "Adi"))
             .environmentObject(Theme.theme1) // Use your default theme here
             .environmentObject(Session())
             .environmentObject(NavigationManager())

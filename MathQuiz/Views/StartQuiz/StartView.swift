@@ -19,7 +19,11 @@ struct StartView: View {
                 NavigationStack(path: $quizNavManager.path) {
                     StartQuizView()
                         .navigationDestination(for: Destination.self) { dest in
+                            let _ = print("Navigating to \(dest)")
+                                          
                             switch dest {
+                            case .quizSetup:
+                                StartQuizView()
                             case .startQuiz:
                                 QuizView()
                             case .complete:
@@ -42,6 +46,8 @@ struct StartView: View {
                                 ReviewResultView(quiz: quiz)
                             case .complete:
                                 CompletedReviewView()
+                            case .quizSetup:
+                                StartQuizView()
                             case .startQuiz:
                                 QuizView()
                             }

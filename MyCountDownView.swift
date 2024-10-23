@@ -28,9 +28,6 @@ struct MyCountDownView: View {
 
     var body: some View {
         ZStack {
-            theme.colors.background
-                .opacity(0.9)
-                .edgesIgnoringSafeArea(.all)
             
             Circle()
                 .fill(color.opacity(0.3))

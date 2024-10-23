@@ -23,14 +23,12 @@ struct StartQuizView: View {
     var body: some View {
         mainContent
             .onAppear(perform: setupSession)
-            .background(theme.colors.background)
             .accentColor(theme.colors.accent)
     }
     
     private var mainContent: some View {
         ScrollView {
             VStack {
-                theme.colors.background.ignoresSafeArea()
                 
                 ZStack {
                     
@@ -55,7 +53,7 @@ struct StartQuizView: View {
                     }.padding()
                 }
             }.padding(.bottom, 16)
-        }
+        }.navigationBarBackButtonHidden()
     }
     
     private var titleView: some View {
@@ -90,10 +88,8 @@ struct StartQuizView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .background(theme.colors.background)
             }
             .padding()
-            .background(theme.colors.background)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -171,12 +167,11 @@ struct GameTypeButton: View {
                 Text(operation.description)
                     .font(theme.fonts.regular)
             }
-            //            .foregroundColor(theme.colors.text)
             .foregroundColor(.white)
             .frame(width: 100, height: 100)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(viewModel.selectedOperation == operation ? theme.colors.accent : theme.colors.primary)
+                    .fill(viewModel.selectedOperation == operation ? theme.colors.primary : theme.colors.accent)
                     .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
             )
         }
@@ -201,7 +196,6 @@ struct DifficultyPicker: View {
                 }
             }
             .pickerStyle(.segmented)
-            .background(theme.colors.background)
         }
         .padding()
         .overlay(

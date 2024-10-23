@@ -12,7 +12,12 @@ struct HistoryView: View {
     var body: some View {
         VStack {
             headerView
+            
+            Divider()
+            
             weeklyQuizGraph
+            
+            Divider()
             
             List {
                 ForEach(quizzes, id: \.id) { quiz in
@@ -22,19 +27,39 @@ struct HistoryView: View {
                 }
             }
             .listStyle(PlainListStyle())
-            .background(theme.colors.background)
+//            .background(theme.colors.background)
+        }
+    }
+    
+    private var name: String {
+        get {
+            if let uname = userManager.user {
+                return "Welcome \(uname.name)"
+            }
+            
+            return "Guest"
+        }
+    }
+    
+    private var username: String {
+        get {
+            if let uname = userManager.user {
+                return "username: \(uname.username)"
+            }
+            
+            return ""
         }
     }
     
     private var headerView: some View {
         VStack(spacing: 10) {
-            Text(userManager.user?.name ?? "User")
+            Text(name)
                 .font(theme.fonts.large)
                 .foregroundColor(theme.colors.primary)
             
-            Text(userManager.user?.email ?? "")
+            Text(username)
                 .font(theme.fonts.regular)
-                .foregroundColor(theme.colors.secondary)
+                .foregroundColor(theme.colors.primary.opacity(0.6))
         }
         .padding()
     }
@@ -68,7 +93,7 @@ struct HistoryView: View {
             .padding(.bottom)
         }
         .frame(maxWidth: .infinity)
-        .background(theme.colors.background)
+//        .background(theme.colors.background)
         .cornerRadius(10)
         .shadow(color: theme.colors.primary.opacity(0.1), radius: 5, x: 0, y: 2)
         .padding(.horizontal)

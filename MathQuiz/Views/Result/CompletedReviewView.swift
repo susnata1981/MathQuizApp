@@ -14,8 +14,6 @@ struct CompletedReviewView: View {
     
     var body: some View {
         ZStack {
-            theme.colors.background.edgesIgnoringSafeArea(.all)
-            
             VStack(spacing: 30) {
                 Text("Review Completed!")
                     .font(theme.fonts.large)
@@ -29,12 +27,18 @@ struct CompletedReviewView: View {
                     .opacity(showAnimation ? 1 : 0)
                     .scaleEffect(showAnimation ? 1 : 0.5)
                 
-                StandardButton(title: "Start Another Quiz", action: navigationManager.gotoHome)
-                    .opacity(showAnimation ? 1 : 0)
-                    .offset(y: showAnimation ? 0 : 20)
+//                Button(action: navigationManager.gotoQuizFromHistory) {
+//                    Text("Take another quiz")
+//                }
+                
+                Button(action: navigationManager.gotoProfile) {
+                    Text("Review quiz")
+                }
+                
             }
             .padding()
         }
+        .navigationBarBackButtonHidden()
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0)) {
                 showAnimation = true

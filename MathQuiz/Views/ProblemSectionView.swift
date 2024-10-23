@@ -31,7 +31,7 @@ struct ProblemSectionView: View {
                 .font(theme.fonts.xlarge.weight(.bold))
                 .foregroundColor(theme.colors.primary)
             }
-            .frame(width: 180)
+            .frame(width: 240)
             .padding()
             .background(.white)
             .cornerRadius(15)

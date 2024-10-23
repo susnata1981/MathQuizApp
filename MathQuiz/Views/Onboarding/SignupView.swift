@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import FirebaseCore
 
-struct NewSignupView: View {
+struct SignupView: View {
     @State private var name: String = ""
     @State private var username: String = ""
     @State private var pin: String = ""
@@ -22,23 +22,27 @@ struct NewSignupView: View {
     var body: some View {
         NavigationView {
             ZStack {
-//                theme.colors.background.edgesIgnoringSafeArea(.all)
-                
                 VStack(spacing: 20) {
-                    Text("New Create Account")
+                    Text("Sign Up")
                         .font(theme.fonts.large)
-                        .foregroundColor(theme.colors.primary)
+                        .foregroundColor(theme.colors.accent)
                         .fontWeight(.bold)
                         .padding(.top, 50)
                     
                     VStack(spacing: 15) {
-                        InputField(icon: "person", placeholder: "Name", text: $name)
-                            .autocorrectionDisabled()
-                            .autocapitalization(.none)
+                        HStack {
+                            InputField(icon: "person", placeholder: "Name", text: $name)
+                                .autocorrectionDisabled()
+                                .autocapitalization(.none)
+                            
+                            if !name.isEmpty {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(theme.colors.success)
+                            }
+                        }
                         
                         HStack {
                             InputField(icon: "person.fill", placeholder: "Username", text: $username)
-                                .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .autocapitalization(.none)
                                 .onChange(of: username) { _ in
@@ -89,23 +93,21 @@ struct NewSignupView: View {
                         } else {
                             Text("Sign Up")
                                 .foregroundColor(.white)
-//                                .foregroundColor(theme.colors.primary)
                         }
                     }
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-//                    .foregroundColor(.white)
-//                    .background(isFormValid && !isSigningUp ? theme.colors.primary : theme.colors.error)
-                    .background(theme.colors.primary)
+                    .foregroundColor(.white)
+                    .background(isFormValid && !isSigningUp ? theme.colors.accent : theme.colors.disabled)
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .disabled(!isFormValid || isSigningUp)
                     
                     HStack {
                         Text("Already have an account?")
-                        NavigationLink("Sign In", destination: NewSigninView())
+                        NavigationLink("Sign In", destination: SigninView())
                             .foregroundColor(theme.colors.accent)
-                    }.font(theme.fonts.caption)
+                    }.font(theme.fonts.regular)
                     
                     Spacer()
                 }
@@ -172,10 +174,10 @@ struct NewSignupView: View {
     }
 }
 
-struct NewSignupView_Previews: PreviewProvider {
+struct SignupView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            NewSignupView()
+            SignupView()
                 .environmentObject(UserManager())
                 .environmentObject(Theme.theme1)
         }

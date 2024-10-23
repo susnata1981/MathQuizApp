@@ -116,7 +116,6 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
             }
         }
         self.score = Score(totalCorrect: totalCorrect, totalIncorrect: totalIncorrect)
-//        return Score(totalCorrect: totalCorrect, totalIncorrect: totalIncorrect)
     }
     
     func getProblem(index: Int) -> Problem {
@@ -131,7 +130,7 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
 
     private func save(_ user:User) async {
         do {
-            self.uid = user.uid
+            self.uid = user.username
             self.id = try await QuizDao.shared.save(user, self)
         } catch {
             print("Failed to save quiz!")

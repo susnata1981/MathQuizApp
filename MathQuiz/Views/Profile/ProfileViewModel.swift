@@ -25,7 +25,7 @@ class ProfileViewModel {
             do {
                 return try await QuizDao.shared.getAll(user!)
             } catch {
-                print("Failed to load any quiz data for user \(user?.uid), error: \(error.localizedDescription)")
+                print("Failed to load any quiz data for user \(user!), error: \(error.localizedDescription)")
                 return []
             }
         }
@@ -35,7 +35,7 @@ class ProfileViewModel {
             self.quizzes.removeAll()
             self.quizzes.append(contentsOf: allQuizzes)
         } catch {
-            print("Failed to load any quiz data for user \(user?.uid), error: \(error.localizedDescription)")
+            print("Failed to load any quiz data for user \(user!), error: \(error.localizedDescription)")
             self.quizzes.removeAll()
         }
     }
