@@ -26,6 +26,8 @@ struct ResultView: View {
     var body: some View {
         ZStack {
             
+            theme.colors.background.ignoresSafeArea(.all)
+            
             VStack(spacing: 30) {
                 resultHeader
                 scoreCard

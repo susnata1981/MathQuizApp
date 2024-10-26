@@ -13,7 +13,6 @@ class NavigationManager: ObservableObject {
    
     func gotoQuiz() {
         selectTab = 0
-        path = NavigationPath()
         path.append(Destination.startQuiz)
     }
    

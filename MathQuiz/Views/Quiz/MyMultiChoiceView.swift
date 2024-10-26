@@ -46,29 +46,33 @@ struct ReviewChoiceRowView: View {
                 .font(theme.fonts.large)
                 .fontWeight(.bold)
                 .foregroundColor(fillForegroundColor(item))
-                .frame(width: 120, height: 60)
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(fillBackgroundColor(item))
-                        .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
-                )
+                .frame(maxWidth: .infinity, maxHeight: 60)
+                .background(fillBackgroundColor(item))
+                .cornerRadius(8)
+                .padding(8)
+//                .background(
+//                    RoundedRectangle(cornerRadius: 15)
+//                        .fill(fillBackgroundColor(item))
+//                        .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
+//                )
         }
         .disabled(true)
     }
     
     func fillForegroundColor(_ item: MultiChoiceItem) -> Color {
         if didUserSelect(problem, item) {
-            return .white
+            return theme.colors.background
         } else {
-            return theme.colors.primary
+            return theme.colors.accent
         }
     }
     
+    
     func fillBackgroundColor(_ item: MultiChoiceItem) -> Color {
         if didUserSelect(problem, item) {
-            return String(problem.answer) == item.content ? theme.colors.success : theme.colors.error
+            return String(problem.answer) == item.content ? theme.colors.accent.opacity(0.4) : theme.colors.background.opacity(0.4)
         } else {
-            return .white
+            return theme.colors.background.opacity(0.4)
         }
     }
     

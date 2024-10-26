@@ -39,13 +39,11 @@ struct ChoiceRowView: View {
             Text(item.content)
                 .font(theme.fonts.large)
                 .fontWeight(.bold)
-                .foregroundColor(quizVM.isChoiceSelected(item) ? theme.colors.background : theme.colors.text)
-                .frame(width: 120, height: 60)
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(fillColor(item))
-                        .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
-                )
+                .foregroundColor(quizVM.isChoiceSelected(item) ? theme.colors.background : theme.colors.accent)
+                .frame(maxWidth: .infinity, maxHeight: 60)
+                .background(fillColor(item))
+                .cornerRadius(8)
+                .padding(8)
         }
         .disabled(quizVM.isChoiceSelected(item) || isReviewMode)
         .phaseAnimator(getShakeAnimationStates(), trigger: isWrongAnswer) { content, phase in
@@ -63,7 +61,7 @@ struct ChoiceRowView: View {
     }
     
     func fillColor(_ item: MultiChoiceItem) -> Color {
-        quizVM.isChoiceSelected(item) ? theme.colors.accent : .white
+        quizVM.isChoiceSelected(item) ? theme.colors.accent.opacity(0.4) : theme.colors.background.opacity(0.4)
     }
 }
 
@@ -75,6 +73,7 @@ struct ChoiceRowView_Previews: PreviewProvider {
             problem: Problem(num1: 1, num2: 2, operation: .add)
         )
         .environmentObject(QuizViewModel())
-        .environmentObject(Theme.theme1) // Use your default theme here
+        .environmentObject(Theme.theme1)
+        .colorScheme(.dark)
     }
 }

@@ -14,6 +14,9 @@ struct CompletedReviewView: View {
     
     var body: some View {
         ZStack {
+            
+            theme.colors.background.edgesIgnoringSafeArea(.all)
+            
             VStack(spacing: 30) {
                 Text("Review Completed!")
                     .font(theme.fonts.large)
@@ -22,18 +25,19 @@ struct CompletedReviewView: View {
                     .scaleEffect(showAnimation ? 1 : 0.5)
                 
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 100))
+                    .font(.system(size: 60))
                     .foregroundColor(theme.colors.success)
                     .opacity(showAnimation ? 1 : 0)
                     .scaleEffect(showAnimation ? 1 : 0.5)
                 
-//                Button(action: navigationManager.gotoQuizFromHistory) {
-//                    Text("Take another quiz")
-//                }
-                
                 Button(action: navigationManager.gotoProfile) {
-                    Text("Review quiz")
+                    Text("Back")
+                        .foregroundColor(theme.colors.background)
+                        .padding(16)
+                        .background(theme.colors.primary)
+                        .cornerRadius(10)
                 }
+                
                 
             }
             .padding()
@@ -51,6 +55,7 @@ struct CompletedReviewView_Previews: PreviewProvider {
     static var previews: some View {
         CompletedReviewView()
             .environmentObject(NavigationManager())
-            .environmentObject(Theme.theme1) // Use your default theme here
+            .environmentObject(Theme.theme1)
+            .colorScheme(.dark)
     }
 }

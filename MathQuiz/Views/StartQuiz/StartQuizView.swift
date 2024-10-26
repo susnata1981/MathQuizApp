@@ -21,17 +21,23 @@ struct StartQuizView: View {
     @EnvironmentObject var profileNavManager: NavigationManager
     
     var body: some View {
-        mainContent
-            .onAppear(perform: setupSession)
-            .accentColor(theme.colors.accent)
+        ZStack {
+            theme.colors.background.ignoresSafeArea(.all)
+
+            mainContent
+                .onAppear{
+                    setupSession()
+                    customizeSegmentedControl()
+                }
+                .accentColor(theme.colors.accent)
+                .toolbar(.visible, for: .tabBar)
+        }
     }
-    
+  
     private var mainContent: some View {
         ScrollView {
             VStack {
-                
                 ZStack {
-                    
                     if showCountdown {
                         MyCountDownView(showCountdown: $showCountdown) {
                             Task {
@@ -60,12 +66,8 @@ struct StartQuizView: View {
         VStack {
             Text("Math Quiz")
                 .font(theme.fonts.large)
-                .foregroundColor(theme.colors.text)
-                .padding()
-            
-            Text("Choose Game")
-                .font(theme.fonts.bold)
                 .foregroundColor(theme.colors.primary)
+                .padding()
         }
     }
     
@@ -79,7 +81,7 @@ struct StartQuizView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Number of Problems")
                     .font(theme.fonts.bold)
-                    .foregroundColor(theme.colors.text)
+                    .foregroundColor(theme.colors.primary)
                 
                 Picker("Select Number of Problems", selection: $viewModel.numberOfProblems) {
                     ForEach(problemOptions, id: \.self) { number in
@@ -91,10 +93,6 @@ struct StartQuizView: View {
             }
             .padding()
             .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(theme.colors.primary.opacity(0.2), lineWidth: 1)
-            )
         }
     }
     
@@ -132,11 +130,10 @@ struct StartQuizView: View {
         viewModel.user = userManager.user
     }
     
-    private func startQuiz() {
-        Task {
-            session.quiz = await viewModel.handleStartQuiz()
-            quizNavManager.gotoQuiz()
-        }
+    private func customizeSegmentedControl() {
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(theme.colors.primary.opacity(0.4))
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(theme.colors.accent)], for: .normal)
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(.white)], for: .selected)
     }
 }
 
@@ -145,9 +142,15 @@ struct ChooseGameType: View {
     @EnvironmentObject var theme: Theme
     
     var body: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 20) {
-            ForEach(MathOperation.allCases, id: \.self) { operation in
-                GameTypeButton(operation: operation, viewModel: viewModel)
+        VStack(alignment: .leading) {
+            Text("Choose Operation")
+                .font(theme.fonts.bold)
+                .foregroundColor(theme.colors.primary)
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 20) {
+                ForEach(MathOperation.allCases, id: \.self) { operation in
+                    GameTypeButton(operation: operation, viewModel: viewModel)
+                }
             }
         }
         .padding()
@@ -164,15 +167,16 @@ struct GameTypeButton: View {
             VStack {
                 Text(operation.rawValue)
                     .font(theme.fonts.xlarge)
+                
                 Text(operation.description)
                     .font(theme.fonts.regular)
             }
-            .foregroundColor(.white)
+            .foregroundColor(theme.colors.accent)
             .frame(width: 100, height: 100)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(viewModel.selectedOperation == operation ? theme.colors.primary : theme.colors.accent)
-                    .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
+                    .fill(viewModel.selectedOperation == operation ? theme.colors.primary : theme.colors.primary.opacity(0.4))
+                    .shadow(color: theme.colors.primary.opacity(0.4), radius: 5, x: 0, y: 3)
             )
         }
         .animation(.spring(), value: viewModel.selectedOperation)
@@ -187,7 +191,7 @@ struct DifficultyPicker: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Difficulty Level")
                 .font(theme.fonts.bold)
-                .foregroundColor(theme.colors.text)
+                .foregroundColor(theme.colors.primary)
             
             Picker("Select Difficulty", selection: $viewModel.selectedDiffilcultyLevel) {
                 ForEach(DifficultyLevel.allCases, id: \.self) { level in
@@ -198,18 +202,72 @@ struct DifficultyPicker: View {
             .pickerStyle(.segmented)
         }
         .padding()
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(theme.colors.primary.opacity(0.2), lineWidth: 1)
+    }
+}
+
+struct StartQuizView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Preview with default theme
+            StartQuizView()
+                .environmentObject(mockUserManager())
+                .environmentObject(Session())
+                .environmentObject(Theme.theme1)
+                .previewDisplayName("Default Theme")
+                        
+            // Preview in dark mode
+            StartQuizView()
+                .environmentObject(mockUserManager())
+                .environmentObject(Session())
+                .environmentObject(Theme.theme1)
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Dark Mode")
+            
+        }
+    }
+    
+    static func mockUserManager(isLoggedIn: Bool = false) -> UserManager {
+        let userManager = UserManager()
+        if isLoggedIn {
+            userManager.user = User(username: "testuser", pin: "1234", name: "Test User")
+        }
+        return userManager
+    }
+}
+
+// If you haven't defined Theme.theme2, you can add it here or in your Theme file
+extension Theme {
+    static let theme3 = Theme(
+        colors: ThemeColors(
+            primary: Color.init(hex: 0xE8B855),
+            secondary: Color.gray,
+            background: Color.init(hex: 0x43403B),
+            text: Color.black,
+            accent: Color.init(hex: 0xF7F8F4),
+            success: Color.green,
+            error: Color.red,
+            disabled: Color.gray.opacity(0.5)
+        ),
+        fonts: ThemeFonts(
+            small: Font.footnote,
+            regular: Font.body,
+            bold: Font.headline,
+            large: Font.title,
+            xlarge: Font.largeTitle,
+            xxlarge: Font.largeTitle,
+            caption: Font.caption
+        )
+    )
+}
+
+extension Color {
+    init(hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xff) / 255,
+            green: Double((hex >> 08) & 0xff) / 255,
+            blue: Double((hex >> 00) & 0xff) / 255,
+            opacity: alpha
         )
     }
 }
-
-extension UISegmentedControl {
-    override open func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        self.selectedSegmentTintColor = UIColor(Theme.theme1.colors.accent)
-    }
-}
-
-

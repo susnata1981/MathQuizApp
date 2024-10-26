@@ -10,24 +10,33 @@ struct HistoryView: View {
     var quizzes: [Quiz]
     
     var body: some View {
-        VStack {
-            headerView
+        ZStack {
+            theme.colors.background.edgesIgnoringSafeArea(.all)
             
-            Divider()
-            
-            weeklyQuizGraph
-            
-            Divider()
-            
-            List {
-                ForEach(quizzes, id: \.id) { quiz in
-                    NavigationLink(value: Destination.reviewResult(quiz: quiz)) {
-                        QuizRowView(quiz: quiz)
+            VStack {
+                headerView
+                
+                Divider()
+                
+                weeklyQuizGraph
+                
+                Divider()
+                    .overlay(theme.colors.secondary)
+                
+                ZStack {
+                    theme.colors.background.edgesIgnoringSafeArea(.all)
+                    
+                    List {
+                        ForEach(quizzes, id: \.id) { quiz in
+                            NavigationLink(value: Destination.reviewResult(quiz: quiz)) {
+                                QuizRowView(quiz: quiz)
+                            }.listRowBackground(theme.colors.background)
+                        }
                     }
+                    .listStyle(PlainListStyle())
+                    .background(.clear)
                 }
             }
-            .listStyle(PlainListStyle())
-//            .background(theme.colors.background)
         }
     }
     
@@ -77,15 +86,15 @@ struct HistoryView: View {
                     VStack {
                         Text("\(weeklyQuizCounts[index].1)")
                             .font(theme.fonts.small)
-                            .foregroundColor(theme.colors.secondary)
+                            .foregroundColor(theme.colors.primary)
                         
                         Rectangle()
-                            .fill(theme.colors.accent)
+                            .fill(theme.colors.primary.opacity(0.2))
                             .frame(width: 30, height: barHeight(for: weeklyQuizCounts[index].1))
                         
                         Text("W\(weeklyQuizCounts[index].0)")
                             .font(theme.fonts.small)
-                            .foregroundColor(theme.colors.secondary)
+                            .foregroundColor(theme.colors.primary)
                     }
                 }
             }
@@ -95,7 +104,7 @@ struct HistoryView: View {
         .frame(maxWidth: .infinity)
 //        .background(theme.colors.background)
         .cornerRadius(10)
-        .shadow(color: theme.colors.primary.opacity(0.1), radius: 5, x: 0, y: 2)
+        .shadow(color: theme.colors.primary.opacity(0.2), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
     }
     
@@ -138,6 +147,7 @@ struct HistoryView_Previews: PreviewProvider {
         ])
         .environmentObject(UserManager())
         .environmentObject(NavigationManager())
-        .environmentObject(Theme.theme1) // Use your default theme here
+        .environmentObject(Theme.theme1)
+        .colorScheme(.dark)
     }
 }

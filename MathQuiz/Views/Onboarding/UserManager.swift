@@ -12,7 +12,7 @@ import FirebaseFirestore
 
 class UserManager: ObservableObject {
     @Published var signedIn: Bool = false
-    private(set) var user: User?
+    var user: User?
     
     struct Constants {
         static let userSignedInKey = "UserSignedIn"

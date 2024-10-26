@@ -22,6 +22,9 @@ struct SignupView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                
+                theme.colors.background.ignoresSafeArea(.all)
+                
                 VStack(spacing: 20) {
                     Text("Sign Up")
                         .font(theme.fonts.large)
@@ -31,7 +34,7 @@ struct SignupView: View {
                     
                     VStack(spacing: 15) {
                         HStack {
-                            InputField(icon: "person", placeholder: "Name", text: $name)
+                            InputField(icon: "person.fill", placeholder: "Name", text: $name)
                                 .autocorrectionDisabled()
                                 .autocapitalization(.none)
                             
@@ -65,26 +68,28 @@ struct SignupView: View {
                         
                         HStack {
                             InputField(
-                                icon: "lock",
+                                icon: "lock.fill",
                                 placeholder: "Pin",
                                 text: $pin,
                                 isSecure: !showPassword
-                            )
+                            ).keyboardType(.numberPad)
                             
                             Button(action: { showPassword.toggle() }) {
                                 Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
-                                    .foregroundColor(theme.colors.secondary)
+                                    .foregroundColor(theme.colors.accent)
                             }
                         }
                         
                         InputField(
-                            icon: "lock",
+                            icon: "lock.fill",
                             placeholder: "Confirm Pin",
                             text: $confirmPin,
                             isSecure: true
-                        )
+                        ).keyboardType(.numberPad)
                     }
                     .padding(.horizontal)
+                    
+                    Spacer()
                     
                     Button(action: signup) {
                         if isSigningUp {
@@ -92,22 +97,28 @@ struct SignupView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
                             Text("Sign Up")
-                                .foregroundColor(.white)
+                                .foregroundColor(isFormValid && !isSigningUp ? theme.colors.background : theme.colors.accent)
                         }
                     }
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
                     .background(isFormValid && !isSigningUp ? theme.colors.accent : theme.colors.disabled)
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .disabled(!isFormValid || isSigningUp)
                     
                     HStack {
-                        Text("Already have an account?")
-                        NavigationLink("Sign In", destination: SigninView())
-                            .foregroundColor(theme.colors.accent)
-                    }.font(theme.fonts.regular)
+                        NavigationLink(destination: SigninView()) {
+                            Text("Sign In")
+                                .frame(height: 55)
+                                .frame(maxWidth: .infinity)
+                                .background(theme.colors.disabled.opacity(0.5))
+                                .foregroundColor(theme.colors.accent)
+                                .cornerRadius(10)
+                                .padding(.horizontal)
+                                .font(theme.fonts.regular)
+                        }
+                    }
                     
                     Spacer()
                 }
@@ -180,6 +191,7 @@ struct SignupView_Previews: PreviewProvider {
             SignupView()
                 .environmentObject(UserManager())
                 .environmentObject(Theme.theme1)
+                .colorScheme(.dark)
         }
     }
 }

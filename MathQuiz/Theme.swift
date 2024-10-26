@@ -17,6 +17,7 @@ struct ThemeFonts {
     let bold: Font
     let large: Font
     let xlarge: Font
+    let xxlarge: Font
     let caption: Font  // Added caption font
 }
 
@@ -41,6 +42,7 @@ class Theme: ObservableObject {
             bold: Font.custom("ComicSansMS-Bold", size: 16),
             large: Font.custom("ComicSansMS-Bold", size: 24),
             xlarge: Font.custom("ComicSansMS-Bold", size: 48),
+            xxlarge: Font.custom("ComicSansMS-Bold", size: 60),
             caption: Font.custom("ComicSansMS", size: 10)  // Added caption font
         )
     )
@@ -62,6 +64,7 @@ class Theme: ObservableObject {
             bold: Font.custom("Papyrus-Bold", size: 16),
             large: Font.custom("Papyrus-Bold", size: 24),
             xlarge: Font.custom("Papyrus-Bold", size: 48),
+            xxlarge: Font.custom("Papyrus-Bold", size: 84),
             caption: Font.custom("Papyrus", size: 10)  // Added caption font
         )
     )
