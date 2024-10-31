@@ -18,24 +18,22 @@ struct ProblemSectionView: View {
     var body: some View {
         
             if let problem = problem, let q = quiz {
-                VStack(spacing: 20) {
-                    
-                    Text("QUESTION \(indexOfProblem + 1) of \(q.totalProblems)")
-                        .font(theme.fonts.regular)
-                        .fontWeight(.bold)
-                        .foregroundColor(theme.colors.primary.opacity(0.8))
+                VStack(spacing: 0) {
+
+                    Text("Question \(indexOfProblem + 1) of \(q.totalProblems)")
+                        .font(theme.fonts.small)
+                        .foregroundColor(theme.colors.text)
                     
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Text(problem.getFirstNumber())
                         Text(problem.getOperationName())
                         Text(problem.getSecondNumber())
                     }
-                    .font(theme.fonts.xxlarge.weight(.bold))
-                    .foregroundColor(theme.colors.primary)
+                    .font(theme.fonts.xxlarge.weight(.heavy))
+                    .foregroundColor(theme.colors.text)
                     
                 }
                 .frame(maxWidth: .infinity)
-                .padding()
                 .cornerRadius(8)
             } else {
                 ProgressView()

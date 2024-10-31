@@ -23,7 +23,7 @@ struct Problem: CustomDebugStringConvertible, Hashable, Codable {
         self.num2 = num2
         self.operation = operation
         self.numChoices = numChoices
-        let _ = initMultiChoiceItems()
+        var _ = initMultiChoiceItems()
     }
     
     var answer: Int {

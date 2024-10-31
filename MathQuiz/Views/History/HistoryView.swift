@@ -13,28 +13,43 @@ struct HistoryView: View {
         ZStack {
             theme.colors.background.edgesIgnoringSafeArea(.all)
             
-            VStack {
+            VStack(spacing: 0) {
                 headerView
                 
-                Divider()
-                
                 weeklyQuizGraph
+                    .padding(.bottom)
                 
-                Divider()
-                    .overlay(theme.colors.secondary)
+                VStack {
+                    Divider()
+                        .frame(minHeight: 2)
+                        .overlay(theme.colors.secondary)
+                    
+                }.padding(.horizontal, 32)
                 
-                ZStack {
-                    theme.colors.background.edgesIgnoringSafeArea(.all)
+                if (quizzes.isEmpty) {
+                    Spacer()
+                    Text("Start your first quiz to see results here!")
+                        .foregroundColor(theme.colors.text)
+                    
+                    Spacer()
+                } else {
                     
                     List {
                         ForEach(quizzes, id: \.id) { quiz in
-                            NavigationLink(value: Destination.reviewResult(quiz: quiz)) {
+                            HStack {
                                 QuizRowView(quiz: quiz)
-                            }.listRowBackground(theme.colors.background)
+                                    .frame(maxWidth: .infinity)
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.red)
+                            }
+                            .contentShape(Rectangle()) // Makes the entire row tappable
+                            .onTapGesture {
+                                // Navigate to destination manually
+                                navigationManager.gotoReviewResults(quiz)
+                            }
+                            .listRowBackground(Color.clear)
                         }
                     }
-                    .listStyle(PlainListStyle())
-                    .background(.clear)
                 }
             }
         }
@@ -61,23 +76,23 @@ struct HistoryView: View {
     }
     
     private var headerView: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 4) {
             Text(name)
                 .font(theme.fonts.large)
-                .foregroundColor(theme.colors.primary)
+                .foregroundColor(theme.colors.text)
             
             Text(username)
                 .font(theme.fonts.regular)
-                .foregroundColor(theme.colors.primary.opacity(0.6))
+                .foregroundColor(theme.colors.text)
         }
-        .padding()
+        .padding(.vertical, 24)
     }
     
     private var weeklyQuizGraph: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("Quizzes per Week")
-                .font(theme.fonts.bold)
-                .foregroundColor(theme.colors.primary)
+                .font(.subheadline)
+                .foregroundColor(theme.colors.text)
                 .padding(.bottom, 5)
             
             HStack(alignment: .bottom, spacing: 8) {
@@ -86,23 +101,22 @@ struct HistoryView: View {
                     VStack {
                         Text("\(weeklyQuizCounts[index].1)")
                             .font(theme.fonts.small)
-                            .foregroundColor(theme.colors.primary)
+                            .fontWeight(.bold)
+                            .foregroundColor(theme.colors.text)
                         
                         Rectangle()
-                            .fill(theme.colors.primary.opacity(0.2))
+                            .fill(theme.colors.primary)
                             .frame(width: 30, height: barHeight(for: weeklyQuizCounts[index].1))
                         
                         Text("W\(weeklyQuizCounts[index].0)")
                             .font(theme.fonts.small)
-                            .foregroundColor(theme.colors.primary)
+                            .foregroundColor(theme.colors.text)
                     }
                 }
             }
             .frame(height: 150)
-            .padding(.bottom)
         }
         .frame(maxWidth: .infinity)
-//        .background(theme.colors.background)
         .cornerRadius(10)
         .shadow(color: theme.colors.primary.opacity(0.2), radius: 5, x: 0, y: 2)
         .padding(.horizontal)
@@ -147,7 +161,7 @@ struct HistoryView_Previews: PreviewProvider {
         ])
         .environmentObject(UserManager())
         .environmentObject(NavigationManager())
-        .environmentObject(Theme.theme1)
-        .colorScheme(.dark)
+        .environmentObject(Theme.theme4)
+        .colorScheme(.light)
     }
 }

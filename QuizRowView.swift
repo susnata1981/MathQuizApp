@@ -12,48 +12,49 @@ struct QuizRowView: View {
     let quiz: Quiz
     
     var body: some View {
-        ZStack {
-            theme.colors.primary.opacity(0.4).edgesIgnoringSafeArea(.all)
-            
-            HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(quiz.getCreatedAtDate())
-                        .font(theme.fonts.small)
-                        .fontWeight(.heavy)
-                        .foregroundColor(theme.colors.background)
+            VStack {
+                HStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(quiz.getCreatedAtDate())
+                            .font(theme.fonts.small)
+                            .foregroundColor(theme.colors.text)
+                        
+                        HStack(alignment: .bottom) {
+                            Text("status")
+                                .font(theme.fonts.small)
+                                .font(.subheadline)
+                                .foregroundColor(theme.colors.text)
+                            
+                            Text("\(quiz.status.rawValue)")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                                .foregroundColor(theme.colors.text)
+                        }
+                    }
                     
-                    HStack {
-                        Text("status")
-                            .font(theme.fonts.small)
-                            .foregroundColor(.gray)
-                            .foregroundColor(theme.colors.background)
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 6) {
+                        Image(systemName: quiz.getPercentageScore >= 80 ? "hand.thumbsup.fill": "hand.thumbsdown.fill")
+                            .foregroundColor(quiz.getPercentageScore >= 80 ? theme.colors.success : theme.colors.error)
                         
-                        Text("\(quiz.status.rawValue)")
-                            .font(theme.fonts.regular)
-                            .foregroundColor(theme.colors.background)
+                        HStack(alignment: .bottom) {
+                            Text("score")
+                                .font(theme.fonts.small)
+                                .font(.subheadline)
+                                .foregroundColor(theme.colors.text)
+                            
+                            Text("\(quiz.getPercentageScore)%")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                                .foregroundColor(theme.colors.text)
+                        }
                     }
                 }
-                
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 6) {
-                    Image(systemName: quiz.getPercentageScore >= 80 ? "hand.thumbsup.fill": "hand.thumbsdown.fill")
-                        .foregroundColor(quiz.getPercentageScore >= 80 ? theme.colors.primary.opacity(0.8) : theme.colors.error)
-
-                    HStack {
-                        Text("score")
-                            .font(theme.fonts.small)
-                            .foregroundColor(.gray)
-                        
-                        Text("\(quiz.getPercentageScore)%")
-                            .font(theme.fonts.bold)
-                            .foregroundColor(theme.colors.background)
-                    }
-                }
-                
-                
-            }.padding()
-        }
+                .padding(16)
+            }
+        .cornerRadius(8)
+        .padding(.vertical, 4)
     }
     
     private var scoreColor: Color {
@@ -73,7 +74,7 @@ struct QuizRowView_Previews: PreviewProvider {
         Group {
             // High score quiz
             QuizRowView(quiz: mockQuiz(score: 90, status: .completed))
-                .environmentObject(Theme.theme1)
+                .environmentObject(Theme.theme5)
                 .previewDisplayName("High Score")
             
             // Medium score quiz

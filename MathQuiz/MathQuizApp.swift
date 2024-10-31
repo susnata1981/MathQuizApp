@@ -24,7 +24,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MathQuizApp: App {
     @StateObject var session = Session()
     @StateObject var userManager = UserManager()
-    @StateObject var theme = Theme.theme1 // Default to theme1
+    @StateObject var theme = Theme.theme5 // Default to theme1
     
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate

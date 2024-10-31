@@ -44,50 +44,47 @@ struct ReviewChoiceRowView: View {
         Button(action: {}) {
             Text(item.content)
                 .font(theme.fonts.large)
-                .fontWeight(.bold)
-                .foregroundColor(fillForegroundColor(item))
-                .frame(maxWidth: .infinity, maxHeight: 60)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, maxHeight: 48)
+                .padding(4)
                 .background(fillBackgroundColor(item))
                 .cornerRadius(8)
-                .padding(8)
-//                .background(
-//                    RoundedRectangle(cornerRadius: 15)
-//                        .fill(fillBackgroundColor(item))
-//                        .shadow(color: theme.colors.primary.opacity(0.3), radius: 5, x: 0, y: 3)
-//                )
         }
         .disabled(true)
     }
     
     func fillForegroundColor(_ item: MultiChoiceItem) -> Color {
         if didUserSelect(problem, item) {
-            return theme.colors.background
+            return .white
         } else {
-            return theme.colors.accent
+            return theme.colors.text
         }
     }
     
     
     func fillBackgroundColor(_ item: MultiChoiceItem) -> Color {
         if didUserSelect(problem, item) {
-            return String(problem.answer) == item.content ? theme.colors.accent.opacity(0.4) : theme.colors.background.opacity(0.4)
+            return String(problem.answer) == item.content ? theme.colors.success : theme.colors.error
         } else {
-            return theme.colors.background.opacity(0.4)
+            return Color.gray.opacity(0.4)
         }
     }
     
+//    func fillBackgroundColor(_ item: MultiChoiceItem) -> Color {
+//        if String(problem.answer) == item.content {
+//            return theme.colors.accent
+//        }
+//        
+//        if didUserSelect(problem, item) && String(problem.answer) != item.content {
+//            return theme.colors.error
+//        }
+//            
+//        return theme.colors.secondary
+//    }
+  
     private func didUserSelect(_ problem: Problem, _ item: MultiChoiceItem) -> Bool {
         let answer = quiz.answers.filter { $0.key == problem.id }.first?.value
-        return answer != nil && item.content == answer!
+        return answer != nil && item.content == answer
     }
 }
 
-struct MyMultiChoiceView_Previews: PreviewProvider {
-    static var previews: some View {
-        MyMultiChoiceView(
-            problem: Problem(num1: 5, num2: 3, operation: .add),
-            quiz: Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 3)
-        )
-        .environmentObject(Theme.theme1) // Use your default theme here
-    }
-}

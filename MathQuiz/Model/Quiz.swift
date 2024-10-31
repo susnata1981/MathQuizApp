@@ -9,7 +9,19 @@ import Foundation
 import FirebaseFirestore
 
 enum MathOperation: String, CaseIterable, Codable {
-    case add = "+", subtract = "-", multiply = "x", divide = "%"
+    case add = "+"
+    case subtract = "-"
+    case multiply = "x"
+    case divide = "%"
+
+    var symbol: String {
+        switch self {
+        case .add: return "plus"
+        case .subtract: return "minus"
+        case .multiply: return "multiply"
+        case .divide: return "divide"
+        }
+    }
     
     var description: String {
         switch self {

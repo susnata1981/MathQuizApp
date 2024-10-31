@@ -24,12 +24,16 @@ struct StartView: View {
                             switch dest {
                             case .quizSetup:
                                 StartQuizView()
+                                    .toolbar(.visible, for: .tabBar)
                             case .startQuiz:
                                 QuizView()
+                                    .toolbar(.hidden, for: .tabBar)
                             case .complete:
                                 CompletedReviewView()
+                                    .toolbar(.hidden, for: .tabBar)
                             case .reviewResult(let quiz):
                                 ReviewResultView(quiz: quiz)
+                                    .toolbar(.hidden, for: .tabBar)
                             }
                         }
                 }

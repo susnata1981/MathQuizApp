@@ -5,7 +5,6 @@
 //  Created by Susnata Basak on 8/31/24.
 //
 
-
 import SwiftUI
 
 struct ResultView: View {
@@ -19,18 +18,14 @@ struct ResultView: View {
     @State private var showAnimation = true
     @State var score: Int = 0
     
-    init(score: Int = 0) {
-        self.score = score
-    }
-    
     var body: some View {
         ZStack {
-            
             theme.colors.background.ignoresSafeArea(.all)
             
             VStack(spacing: 30) {
-                resultHeader
+//                resultHeader
                 scoreCard
+                detailedResults
                 actionButtons
             }
             .padding()
@@ -44,63 +39,14 @@ struct ResultView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .navigationDestination(isPresented: $startNewGame) {
-            StartQuizView()
-        }
-        .navigationDestination(isPresented: $reviewResult) {
-            ReviewResultView(quiz: session.quiz!)
-        }
         .onAppear{
             score = session.quiz?.score?.percentScore ?? 0
         }
     }
     
-    struct ConfettiView: View {
-        @State private var animate = false
-        
-        var body: some View {
-            ZStack {
-                ForEach(0..<50) { _ in
-                    Circle()
-                        .fill(Color.random)
-                        .frame(width: 15, height: 15)
-                        .position(x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                                  y: animate ? UIScreen.main.bounds.height + 100 : -100)
-                        .animation(
-                            Animation.linear(duration: Double.random(in: 2...5))
-                                .repeatForever(autoreverses: false),
-                            value: animate
-                        )
-                }
-            }
-            .onAppear {
-                animate = true
-            }
-        }
-    }
-
-    struct PulseAnimation: View {
-        @State private var animate = false
-        
-        var body: some View {
-            Circle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: 200, height: 200)
-                .scaleEffect(animate ? 1.2 : 0.8)
-                .opacity(animate ? 0 : 1)
-                .animation(
-                    Animation.easeInOut(duration: 1.5)
-                        .repeatForever(autoreverses: false),
-                    value: animate
-                )
-                .onAppear {
-                    animate = true
-                }
-        }
-    }
-
+    // ... (ConfettiView and PulseAnimation remain the same)
     private var resultHeader: some View {
-        Text("Quiz Results")
+        Text("Results")
             .font(theme.fonts.large)
             .foregroundColor(theme.colors.primary)
             .padding(.top, 50)
@@ -108,25 +54,100 @@ struct ResultView: View {
     
     private var scoreCard: some View {
         VStack(spacing: 20) {
-            HStack {
+            VStack {
                 Text("You scored")
-                    .font(theme.fonts.bold)
+                    .foregroundStyle(theme.colors.text)
+                    .font(.subheadline)
                 
                 Text("\(score)%")
-                    .font(theme.fonts.xlarge)
-                    .foregroundColor(score > 70 ? theme.colors.success : theme.colors.error)
+                    .font(theme.fonts.xxlarge)
+                    .foregroundColor(score > 70 ? theme.colors.primary : theme.colors.text)
                     .fontWeight(.bold)
             }
         }.padding()
     }
     
+    private var detailedResults: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            resultRow(label: "Total Questions", value: "\(session.quiz?.totalProblems ?? 0)")
+            resultRow(label: "Correct Answers", value: "\(session.quiz?.score?.totalCorrect ?? 0)")
+            resultRow(label: "Incorrect Answers", value: "\(session.quiz?.score?.totalIncorrect ?? 0)")
+//            resultRow(label: "Final Score", value: "\(score)%")
+        }
+        .padding()
+        .cornerRadius(10)
+    }
+    
+    private func resultRow(label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(theme.fonts.regular)
+                .foregroundColor(theme.colors.text)
+            Spacer()
+            Text(value)
+                .font(theme.fonts.bold)
+                .foregroundColor(theme.colors.text)
+        }
+    }
+    
     private var actionButtons: some View {
         VStack(spacing: 15) {
-            StandardButton(title: "Start New Game", action: { startNewGame = true })
+            StandardButton(title: "Start New Game", action: { navigationManager.gotoHome() })
             
-            StandardButton(title: "Review Results", action: { reviewResult = true }, style: SecondaryButtonStyle())
+//            StandardButton(title: "Review Results", action: { navigationManager.gotoReviewResults(session.quiz!) }, style: SecondaryButtonStyle())
+            
+            Button(action: { navigationManager.gotoReviewResults(session.quiz!) }) {
+                Text("Review Quiz")
+                    .font(theme.fonts.regular)
+                    .fontWeight(.bold)
+                    .foregroundColor(theme.colors.accent)
+            }
         }
         .padding(.bottom, 50)
+    }
+}
+
+struct PulseAnimation: View {
+    @State private var animate = false
+    
+    var body: some View {
+        Circle()
+            .fill(Color.gray.opacity(0.3))
+            .frame(width: 200, height: 200)
+            .scaleEffect(animate ? 1.2 : 0.8)
+            .opacity(animate ? 0 : 1)
+            .animation(
+                Animation.easeInOut(duration: 1.5)
+                    .repeatForever(autoreverses: false),
+                value: animate
+            )
+            .onAppear {
+                animate = true
+            }
+    }
+}
+
+struct ConfettiView: View {
+    @State private var animate = false
+    
+    var body: some View {
+        ZStack {
+            ForEach(0..<50) { _ in
+                Circle()
+                    .fill(Color.random)
+                    .frame(width: 15, height: 15)
+                    .position(x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+                              y: animate ? UIScreen.main.bounds.height + 100 : -100)
+                    .animation(
+                        Animation.linear(duration: Double.random(in: 2...5))
+                            .repeatForever(autoreverses: false),
+                        value: animate
+                    )
+            }
+        }
+        .onAppear {
+            animate = true
+        }
     }
 }
 
@@ -139,25 +160,24 @@ extension Color {
         )
     }
 }
-
 struct ResultView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ResultView(score: 10)
+            ResultView()
                 .environmentObject(mockQuizViewModel(score: (8, 2))) // 80% score
                 .environmentObject(mockSession(score: (8, 2)))
                 .environmentObject(NavigationManager())
-                .environmentObject(Theme.theme1)
+                .environmentObject(Theme.theme5)
                 .previewDisplayName("High Score (Theme 1)")
             
-            ResultView(score: 80)
+            ResultView()
                 .environmentObject(mockQuizViewModel(score: (6, 4))) // 60% score
                 .environmentObject(mockSession(score: (6, 4)))
                 .environmentObject(NavigationManager())
-                .environmentObject(Theme.theme2)
+                .environmentObject(Theme.theme4)
                 .previewDisplayName("Low Score (Theme 2)")
             
-            ResultView(score: 100)
+            ResultView()
                 .environmentObject(mockQuizViewModel(score: (10, 0))) // 100% score
                 .environmentObject(mockSession(score: (10, 0)))
                 .environmentObject(NavigationManager())
@@ -175,9 +195,9 @@ struct ResultView_Previews: PreviewProvider {
     
     static func mockSession(score: (Int, Int)) -> Session {
         let session = Session()
-//        session.score = score
-        session.quiz = Quiz(operation: .add, difficultyLevel: .easy, totalProblems: 5)
+        let quiz = Quiz(operation: .add, difficultyLevel: .easy, totalProblems: score.0 + score.1)
+        quiz.score = Score(totalCorrect: score.0, totalIncorrect: score.1)
+        session.quiz = quiz
         return session
     }
 }
-

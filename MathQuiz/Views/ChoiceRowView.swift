@@ -38,9 +38,8 @@ struct ChoiceRowView: View {
         }) {
             Text(item.content)
                 .font(theme.fonts.large)
-                .fontWeight(.bold)
-                .foregroundColor(quizVM.isChoiceSelected(item) ? theme.colors.background : theme.colors.accent)
-                .frame(maxWidth: .infinity, maxHeight: 60)
+                .foregroundColor(quizVM.isChoiceSelected(item) ? .white : theme.colors.text)
+                .frame(maxWidth: .infinity, maxHeight: 72)
                 .background(fillColor(item))
                 .cornerRadius(8)
                 .padding(8)
@@ -61,7 +60,7 @@ struct ChoiceRowView: View {
     }
     
     func fillColor(_ item: MultiChoiceItem) -> Color {
-        quizVM.isChoiceSelected(item) ? theme.colors.accent.opacity(0.4) : theme.colors.background.opacity(0.4)
+        quizVM.isChoiceSelected(item) ? theme.colors.secondary : .gray.opacity(0.2)
     }
 }
 
@@ -73,7 +72,7 @@ struct ChoiceRowView_Previews: PreviewProvider {
             problem: Problem(num1: 1, num2: 2, operation: .add)
         )
         .environmentObject(QuizViewModel())
-        .environmentObject(Theme.theme1)
-        .colorScheme(.dark)
+        .environmentObject(Theme.theme4)
+        .colorScheme(.light)
     }
 }

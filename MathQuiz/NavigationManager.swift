@@ -21,6 +21,10 @@ class NavigationManager: ObservableObject {
         selectTab = 0
     }
     
+    func gotoReviewResults(_ quiz: Quiz) {
+        path.append(Destination.reviewResult(quiz: quiz))
+    }
+    
     func gotoProfile() {
         path = NavigationPath()
         selectTab = 0

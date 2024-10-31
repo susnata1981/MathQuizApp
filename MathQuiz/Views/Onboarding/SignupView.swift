@@ -28,15 +28,14 @@ struct SignupView: View {
                 VStack(spacing: 20) {
                     Text("Sign Up")
                         .font(theme.fonts.large)
-                        .foregroundColor(theme.colors.accent)
-                        .fontWeight(.bold)
-                        .padding(.top, 50)
+                        .foregroundColor(theme.colors.primary)
+                        .padding(.top, 24)
                     
                     VStack(spacing: 15) {
                         HStack {
-                            InputField(icon: "person.fill", placeholder: "Name", text: $name)
-                                .autocorrectionDisabled()
-                                .autocapitalization(.none)
+                            
+                            IconInputField(icon: "person.fill", placeholder: "Name", text: $name, iconColor: theme.colors.primary)
+
                             
                             if !name.isEmpty {
                                 Image(systemName: "checkmark.circle.fill")
@@ -45,7 +44,8 @@ struct SignupView: View {
                         }
                         
                         HStack {
-                            InputField(icon: "person.fill", placeholder: "Username", text: $username)
+                            
+                            IconInputField(icon: "person.fill", placeholder: "Username", text: $username, iconColor: theme.colors.primary)
                                 .autocorrectionDisabled()
                                 .autocapitalization(.none)
                                 .onChange(of: username) { _ in
@@ -59,33 +59,21 @@ struct SignupView: View {
                                     .foregroundColor(isUsernameValid ? theme.colors.success : theme.colors.error)
                             }
                         }
-                        
-                        if !username.isEmpty {
-                            Text(usernameMessage)
-                                .font(theme.fonts.caption)
-                                .foregroundColor(isUsernameValid ? theme.colors.success : theme.colors.error)
-                        }
-                        
+                                                
                         HStack {
-                            InputField(
-                                icon: "lock.fill",
-                                placeholder: "Pin",
-                                text: $pin,
-                                isSecure: !showPassword
-                            ).keyboardType(.numberPad)
+                            
+                            IconInputField(icon: "lock.fill", placeholder: "Pin", text: $pin,                        iconColor: theme.colors.primary, isSecure: !showPassword).keyboardType(.numberPad)
+
                             
                             Button(action: { showPassword.toggle() }) {
                                 Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
-                                    .foregroundColor(theme.colors.accent)
+                                    .foregroundColor(theme.colors.primary)
                             }
                         }
                         
-                        InputField(
-                            icon: "lock.fill",
-                            placeholder: "Confirm Pin",
-                            text: $confirmPin,
-                            isSecure: true
-                        ).keyboardType(.numberPad)
+                        IconInputField(icon: "lock.fill", placeholder: "Confirm Pin", text: $confirmPin,
+                                       iconColor: theme.colors.primary, isSecure: !showPassword).keyboardType(.numberPad)
+
                     }
                     .padding(.horizontal)
                     
@@ -97,28 +85,45 @@ struct SignupView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
                             Text("Sign Up")
-                                .foregroundColor(isFormValid && !isSigningUp ? theme.colors.background : theme.colors.accent)
+                                .foregroundColor(.white)
+//                                .foregroundColor(isFormValid && !isSigningUp ? theme.colors.background : theme.colors.accent)
                         }
                     }
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    .background(isFormValid && !isSigningUp ? theme.colors.accent : theme.colors.disabled)
+//                    .background(isFormValid && !isSigningUp ? theme.colors.accent : theme.colors.disabled)
+                    .background(theme.colors.primary)
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .disabled(!isFormValid || isSigningUp)
                     
-                    HStack {
-                        NavigationLink(destination: SigninView()) {
-                            Text("Sign In")
-                                .frame(height: 55)
-                                .frame(maxWidth: .infinity)
-                                .background(theme.colors.disabled.opacity(0.5))
-                                .foregroundColor(theme.colors.accent)
-                                .cornerRadius(10)
-                                .padding(.horizontal)
-                                .font(theme.fonts.regular)
+//                    HStack {
+//                        NavigationLink(destination: SigninView()) {
+//                            Text("Sign In")
+//                            .frame(height: 55)
+//                            .frame(maxWidth: .infinity)
+//                            .background(.gray.opacity(0.5))
+//                            .foregroundColor(.white)
+//                            .cornerRadius(10)
+//                            .padding(.horizontal)
+//                        }
+//                    }
+                    
+                    VStack {
+                        Text("Already have an account yet?")
+                            .font(.subheadline)
+                            .foregroundColor(theme.colors.text)
+                        
+                        HStack {
+                            NavigationLink(destination: SigninView()) {
+                                Text("Sign in")
+                                    .foregroundColor(theme.colors.accent)
+                                    .font(theme.fonts.regular)
+                                    .fontWeight(.bold)
+                            }
                         }
-                    }
+                    }.padding(.top, 32)
+
                     
                     Spacer()
                 }
@@ -185,13 +190,37 @@ struct SignupView: View {
     }
 }
 
+struct IconInputField: View {
+    var icon: String
+    var placeholder: String
+    @Binding var text: String
+    var iconColor: Color = .blue // Default color
+    var isSecure = false
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(iconColor) // Apply color to the icon
+            if (isSecure) {
+                SecureField(placeholder, text: $text).padding(.leading, 8)
+            } else {
+                TextField(placeholder, text: $text).padding(.leading, 8)
+            }
+                
+        }
+        .padding()
+        .background(RoundedRectangle(cornerRadius: 8).fill(Color(.secondarySystemBackground)))
+    }
+}
+
 struct SignupView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             SignupView()
                 .environmentObject(UserManager())
-                .environmentObject(Theme.theme1)
-                .colorScheme(.dark)
+                .environmentObject(Theme.theme5)
+                .colorScheme(.light)
         }
     }
 }
+

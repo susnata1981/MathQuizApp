@@ -6,7 +6,6 @@
 ////
 //
 
-
 import SwiftUI
 
 struct QuizView: View {
@@ -16,29 +15,38 @@ struct QuizView: View {
     @EnvironmentObject var theme: Theme
     
     @State var shake = false
-    
-    struct Constants {
-        static let totalProblems = 3
-        static let multiChoiceCount = 4
-    }
+    @State private var elapsedTime: TimeInterval = 0
+    @State private var timer: Timer?
     
     var body: some View {
         ZStack {
             theme.colors.background.ignoresSafeArea(.all)
             
-            VStack {
-                Spacer()
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    timerView
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
                 
-                ProblemSectionView(
-                    indexOfProblem: quizVM.ctx.currentIndex,
-                    problem: quizVM.currentProblem,
-                    quiz: quizVM.quiz)
-                .frame(minHeight: 280)
+                progressBar
+                    .padding(.top, 8)
                 
+                   ProblemSectionView(
+                        indexOfProblem: quizVM.ctx.currentIndex,
+                        problem: quizVM.currentProblem,
+                        quiz: quizVM.quiz)
+                    .frame(minHeight: 240)
                 
-                ZStack {
-                    theme.colors.primary.opacity(0.4).ignoresSafeArea(.all)
-                    
+//
+//                VStack {
+//                    Divider()
+//                        .frame(minHeight: 1)
+//                        .overlay(theme.colors.primary)
+//                        
+//                }.padding(.horizontal, 16)
+                
                     VStack {
                         HStack {
                             if let prob = quizVM.ctx.currentProblem {
@@ -56,7 +64,6 @@ struct QuizView: View {
                         Spacer()
                     }
                 }
-            }
             .navigationDestination(isPresented: Binding(
                 get: { quizVM.showResults },
                 set: { quizVM.showResults = $0 }
@@ -65,25 +72,81 @@ struct QuizView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .toolbar(.hidden, for: .tabBar)
         .navigationBarBackButtonHidden()
         .environmentObject(quizVM)
         .onAppear {
             quizVM.quiz = session.quiz!
-            UITabBar.appearance().isHidden = true
+            startTimer()
         }
         .onDisappear {
-            UITabBar.appearance().isHidden = false
+            stopTimer()
         }
+        
+    }
+    
+    var timerView: some View {
+        Text(timeString(from: elapsedTime))
+            .font(theme.fonts.regular)
+            .foregroundColor(theme.colors.text)
+            .padding(8)
+            .cornerRadius(8)
+    }
+    
+    
+    var progressBar: some View {
+        VStack(spacing: 4) {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(theme.colors.primary.opacity(0.3))
+                        .frame(height: 8)
+                    
+                    Rectangle()
+                        .fill(theme.colors.primary)
+                        .frame(width: progressWidth(for: geometry.size.width), height: 8)
+                }
+                .cornerRadius(4)
+            }
+            .frame(height: 8)
+            
+            Text("\(quizVM.ctx.currentIndex + 1) of \(quizVM.quiz?.totalProblems ?? 0)")
+                .font(theme.fonts.caption)
+                .foregroundColor(theme.colors.primary)
+        }
+        .padding(.horizontal)
+    }
+    
+    func progressWidth(for totalWidth: CGFloat) -> CGFloat {
+        let progress = CGFloat(quizVM.ctx.currentIndex + 1) / CGFloat(quizVM.quiz?.totalProblems ?? 1)
+        return totalWidth * progress
     }
     
     var nextButtonView: some View {
         NavigationLink(value: quizVM.quiz) {
             StandardButton(title: "Next", action: {
                 quizVM.handleNextButtonClick()
-            }, style: PrimaryButtonStyleDarkMode())
+                if quizVM.showResults {
+                    stopTimer()
+                }
+            })
         }
-
+    }
+    
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            elapsedTime += 1
+        }
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func timeString(from timeInterval: TimeInterval) -> String {
+        let minutes = Int(timeInterval) / 60
+        let seconds = Int(timeInterval) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 
@@ -94,7 +157,7 @@ struct QuizView_Previews: PreviewProvider {
             QuizView()
                 .environmentObject(mockSession())
                 .environmentObject(NavigationManager())
-                .environmentObject(Theme.theme1)
+                .environmentObject(Theme.theme4)
                 .previewDisplayName("Quiz in Progress (Theme 1)")
             
             // Preview with a different theme

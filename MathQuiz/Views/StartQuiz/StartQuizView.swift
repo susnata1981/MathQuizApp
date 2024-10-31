@@ -8,6 +8,7 @@
 
 
 import SwiftUI
+import UIKit
 
 struct StartQuizView: View {
     @EnvironmentObject var userManager: UserManager
@@ -30,7 +31,6 @@ struct StartQuizView: View {
                     customizeSegmentedControl()
                 }
                 .accentColor(theme.colors.accent)
-                .toolbar(.visible, for: .tabBar)
         }
     }
   
@@ -66,7 +66,7 @@ struct StartQuizView: View {
         VStack {
             Text("Math Quiz")
                 .font(theme.fonts.large)
-                .foregroundColor(theme.colors.primary)
+                .foregroundColor(theme.colors.text)
                 .padding()
         }
     }
@@ -81,7 +81,7 @@ struct StartQuizView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Number of Problems")
                     .font(theme.fonts.bold)
-                    .foregroundColor(theme.colors.primary)
+                    .foregroundColor(theme.colors.text)
                 
                 Picker("Select Number of Problems", selection: $viewModel.numberOfProblems) {
                     ForEach(problemOptions, id: \.self) { number in
@@ -97,7 +97,7 @@ struct StartQuizView: View {
     }
     
     private var startButton: some View {
-        StandardButton(title: "Start Quiz", action: {
+        StandardButton(title: "Start", action: {
             if viewModel.validate() {
                 showCountdown = true
             }
@@ -131,7 +131,11 @@ struct StartQuizView: View {
     }
     
     private func customizeSegmentedControl() {
-        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(theme.colors.primary.opacity(0.4))
+        // Tint color
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(theme.colors.primary)
+        // Background color
+        UISegmentedControl.appearance().backgroundColor = UIColor(theme.colors.background.opacity(0.1))
+
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(theme.colors.accent)], for: .normal)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(.white)], for: .selected)
     }
@@ -145,7 +149,7 @@ struct ChooseGameType: View {
         VStack(alignment: .leading) {
             Text("Choose Operation")
                 .font(theme.fonts.bold)
-                .foregroundColor(theme.colors.primary)
+                .foregroundColor(theme.colors.text)
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 20) {
                 ForEach(MathOperation.allCases, id: \.self) { operation in
@@ -161,25 +165,40 @@ struct GameTypeButton: View {
     let operation: MathOperation
     @State var viewModel: StartQuizViewModel
     @EnvironmentObject var theme: Theme
+    @State var selected = false
+    @State var scale = 1.0
     
     var body: some View {
-        Button(action: { viewModel.handleSelectOperation(operation) }) {
-            VStack {
-                Text(operation.rawValue)
-                    .font(theme.fonts.xlarge)
-                
-                Text(operation.description)
-                    .font(theme.fonts.regular)
+        Button(action: {
+            withAnimation(.spring(.bouncy)) {
+                viewModel.handleSelectOperation(operation)
             }
-            .foregroundColor(theme.colors.accent)
+        }) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.1)
+                            .shadow(.drop(color:.black.opacity(0.7), radius: 3, x: 5, y: 5)))
+                        .stroke(viewModel.selectedOperation == operation ? theme.colors.primary : Color.clear, lineWidth: 2)
+                        .scaleEffect(viewModel.selectedOperation == operation ? 0.9 : 1.0)
+                        .frame(width: 84, height: 84)
+
+                VStack {
+                    Spacer()
+                    
+                    Image(systemName: operation.symbol)
+                        .font(theme.fonts.xlarge)
+                        .padding(.top)
+                    
+                    Spacer()
+                    
+                    Text(operation.description)
+                        .font(theme.fonts.small)
+                        .padding(.bottom)
+                }
+                .foregroundColor(viewModel.selectedOperation == operation ? theme.colors.text : theme.colors.accent)
+            }
             .frame(width: 100, height: 100)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(viewModel.selectedOperation == operation ? theme.colors.primary : theme.colors.primary.opacity(0.4))
-                    .shadow(color: theme.colors.primary.opacity(0.4), radius: 5, x: 0, y: 3)
-            )
         }
-        .animation(.spring(), value: viewModel.selectedOperation)
     }
 }
 
@@ -191,7 +210,7 @@ struct DifficultyPicker: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Difficulty Level")
                 .font(theme.fonts.bold)
-                .foregroundColor(theme.colors.primary)
+                .foregroundColor(theme.colors.text)
             
             Picker("Select Difficulty", selection: $viewModel.selectedDiffilcultyLevel) {
                 ForEach(DifficultyLevel.allCases, id: \.self) { level in
@@ -212,7 +231,7 @@ struct StartQuizView_Previews: PreviewProvider {
             StartQuizView()
                 .environmentObject(mockUserManager())
                 .environmentObject(Session())
-                .environmentObject(Theme.theme1)
+                .environmentObject(Theme.theme5)
                 .previewDisplayName("Default Theme")
                         
             // Preview in dark mode
@@ -239,14 +258,16 @@ struct StartQuizView_Previews: PreviewProvider {
 extension Theme {
     static let theme3 = Theme(
         colors: ThemeColors(
-            primary: Color.init(hex: 0xE8B855),
-            secondary: Color.gray,
-            background: Color.init(hex: 0x43403B),
-            text: Color.black,
-            accent: Color.init(hex: 0xF7F8F4),
+            primary: Color.init(hex: 0x228B22),
+            secondary: Color.init(hex: 0x5C4033),
+            background: Color.init(hex: 0xF5FFFA),
+            text: Color.init(hex: 0x594A4E),
+            accent: Color.init(hex: 0xFFD700),
             success: Color.green,
             error: Color.red,
-            disabled: Color.gray.opacity(0.5)
+            disabled: Color.gray.opacity(0.5),
+            selected: Color.init(hex: 0xFFD275),
+            button: Color.init(hex: 0xD1495B)
         ),
         fonts: ThemeFonts(
             small: Font.footnote,

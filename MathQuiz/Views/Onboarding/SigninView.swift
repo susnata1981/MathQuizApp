@@ -35,18 +35,19 @@ struct SigninView: View {
                 theme.colors.background.ignoresSafeArea(.all)
                 
                 VStack(spacing: 20) {
-                    Text("Sign In")
+                    Text("Math Quiz")
                         .font(theme.fonts.large)
                         .fontWeight(.bold)
-                        .foregroundColor(theme.colors.accent)
+                        .foregroundColor(theme.colors.primary)
                         .padding(.top, 50)
                     
                    
                     VStack(spacing: 15) {
                         HStack {
-                            InputField(icon: "person.fill", placeholder: "username", text: $username)
+//                            InputField(icon: "person.fill", placeholder: "username", text: $username)
+                            IconInputField(icon: "person.fill", placeholder: "Username", text: $username,                        iconColor: theme.colors.primary)
                                 .autocorrectionDisabled()
-                                .foregroundColor(theme.colors.accent)
+                                .foregroundColor(theme.colors.text)
                                 .autocapitalization(.none)
                                 .onChange(of: username) {
                                     resetErrorMessage()
@@ -54,13 +55,9 @@ struct SigninView: View {
                         }
                         
                         HStack {
-                            InputField(
-                                icon: "lock.fill",
-                                placeholder: "pin",
-                                text: $pin,
-                                isSecure: true
-                            )
-                            .foregroundColor(theme.colors.accent)
+                            IconInputField(icon: "lock.fill", placeholder: "Pin", text: $pin,
+                                           iconColor: theme.colors.primary, isSecure: true)
+                            .foregroundColor(theme.colors.text)
                             .keyboardType(.numberPad)
                             .onChange(of: pin) {
                                 showErrorMessage = false
@@ -80,32 +77,33 @@ struct SigninView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
-                            Text("Sign In")
+                            Text("SIGN IN")
                                 .font(theme.fonts.regular)
-                                .foregroundColor(isFormValid && !isSigningIn ? theme.colors.background: theme.colors.accent)
+                                .foregroundColor(isFormValid && !isSigningIn ? .white : .white)
                         }
                     }
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
-                    .background(isFormValid && !isSigningIn ? theme.colors.primary: theme.colors.disabled)
+                    .background(isFormValid && !isSigningIn ? theme.colors.primary: theme.colors.primary)
                     .cornerRadius(10)
                     .padding(.horizontal)
                     .disabled(!isFormValid || isSigningIn)
-                    
-                    HStack {
-                        NavigationLink(destination: SigninView()) {
-                            Text("Sign Up")
-                                .frame(height: 55)
-                                .frame(maxWidth: .infinity)
-                                .background(theme.colors.disabled.opacity(0.5))
-                                .foregroundColor(theme.colors.accent)
-                                .cornerRadius(10)
-                                .padding(.horizontal)
-                                .font(theme.fonts.regular)
+                                        
+                    VStack {
+                        Text("Don't have an account yet?")
+                            .font(.subheadline)
+                            .foregroundColor(theme.colors.text)
+                        
+                        HStack {
+                            NavigationLink(destination: SignupView()) {
+                                Text("Sign up")
+                                    .foregroundColor(theme.colors.accent)
+                                    .font(theme.fonts.regular)
+                                    .fontWeight(.bold)
+                            }
                         }
-                    }
-                }
-                    .navigationDestination(
+                    }.padding(.top, 24)
+                }.navigationDestination(
                         isPresented: Binding(
                             get: { userManager.isUserLoggedIn() },
                             set: {_ in }
@@ -152,25 +150,25 @@ struct SigninView: View {
                 // Default state
                 SigninView()
                     .environmentObject(UserManager())
-                    .environmentObject(Theme.theme1)
+                    .environmentObject(Theme.theme5)
                     .previewDisplayName("Default (Light)")
                 
                 // With error message
                 SigninView(errorMessage: "Invalid username or pin", showErrorMessage: true)
                     .environmentObject(UserManager())
-                    .environmentObject(Theme.theme1)
+                    .environmentObject(Theme.theme5)
                     .previewDisplayName("Error State")
                 
                 // Signing in state
                 SigninView(isSigningIn: true)
                     .environmentObject(UserManager())
-                    .environmentObject(Theme.theme1)
+                    .environmentObject(Theme.theme5)
                     .previewDisplayName("Signing In")
                 
                 // Dark mode
                 SigninView()
                     .environmentObject(UserManager())
-                    .environmentObject(Theme.theme1)
+                    .environmentObject(Theme.theme5)
                     .preferredColorScheme(.dark)
                     .previewDisplayName("Dark Mode")
             }
