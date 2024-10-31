@@ -45,7 +45,7 @@ struct ReviewChoiceRowView: View {
             Text(item.content)
                 .font(theme.fonts.large)
                 .foregroundColor(.white)
-                .frame(maxWidth: .infinity, maxHeight: 48)
+                .frame(maxWidth: .infinity, maxHeight: 40)
                 .padding(4)
                 .background(fillBackgroundColor(item))
                 .cornerRadius(8)
@@ -70,18 +70,6 @@ struct ReviewChoiceRowView: View {
         }
     }
     
-//    func fillBackgroundColor(_ item: MultiChoiceItem) -> Color {
-//        if String(problem.answer) == item.content {
-//            return theme.colors.accent
-//        }
-//        
-//        if didUserSelect(problem, item) && String(problem.answer) != item.content {
-//            return theme.colors.error
-//        }
-//            
-//        return theme.colors.secondary
-//    }
-  
     private func didUserSelect(_ problem: Problem, _ item: MultiChoiceItem) -> Bool {
         let answer = quiz.answers.filter { $0.key == problem.id }.first?.value
         return answer != nil && item.content == answer

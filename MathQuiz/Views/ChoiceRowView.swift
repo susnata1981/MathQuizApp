@@ -39,7 +39,7 @@ struct ChoiceRowView: View {
             Text(item.content)
                 .font(theme.fonts.large)
                 .foregroundColor(quizVM.isChoiceSelected(item) ? .white : theme.colors.text)
-                .frame(maxWidth: .infinity, maxHeight: 72)
+                .frame(maxWidth: .infinity, maxHeight: 40)
                 .background(fillColor(item))
                 .cornerRadius(8)
                 .padding(8)

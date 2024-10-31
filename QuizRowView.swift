@@ -19,19 +19,26 @@ struct QuizRowView: View {
                             .font(theme.fonts.small)
                             .foregroundColor(theme.colors.text)
                         
-                        HStack(alignment: .bottom) {
-                            Text("status")
-                                .font(theme.fonts.small)
-                                .font(.subheadline)
-                                .foregroundColor(theme.colors.text)
-                            
+                        HStack(alignment: .bottom) {                            
                             Text("\(quiz.status.rawValue)")
                                 .font(.subheadline)
                                 .fontWeight(.bold)
                                 .foregroundColor(theme.colors.text)
                         }
                     }
-                    
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Difficulty")
+                            .font(theme.fonts.small)
+                            .foregroundColor(theme.colors.text)
+                        
+                            
+                        Text("\(quiz.difficultyLevel.rawValue)")
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                                .foregroundColor(theme.colors.text)
+                    }.padding(.horizontal)
+
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 6) {
@@ -51,7 +58,7 @@ struct QuizRowView: View {
                         }
                     }
                 }
-                .padding(16)
+                .padding(4)
             }
         .cornerRadius(8)
         .padding(.vertical, 4)

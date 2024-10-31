@@ -55,7 +55,12 @@ struct ReviewResultView: View {
                     
                     Spacer()
                     
-                    nextButtonView
+                    HStack {
+                        
+                        StandardButton(title: "Prev", action: handlePrevButtonTap, style: SecondaryButtonStyle())
+                        
+                        nextButtonView
+                    }
                     
                     Spacer()
                 }.padding(.top, 24)
@@ -97,11 +102,18 @@ struct ReviewResultView: View {
     }
     
     private func handleNextButtonTap() {
-        currIndex += 1
-        if currIndex < quiz.getProblemCount() {
+        if currIndex < quiz.getProblemCount() - 1 {
+            currIndex += 1
             currProblem = quiz.getProblem(index: currIndex)
         } else {
             quizNavManager.gotoCompleteReview()
+        }
+    }
+    
+    private func handlePrevButtonTap() {
+        if currIndex > 0 {
+            currIndex -= 1
+            currProblem = quiz.getProblem(index: currIndex)
         }
     }
 }
