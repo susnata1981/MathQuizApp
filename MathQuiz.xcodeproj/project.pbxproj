@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		784A5B242CD5268D004C14FB /* TestUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784A5B232CD5268D004C14FB /* TestUI.swift */; };
 		784AEB832CB64C2600B4570D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB822CB64C2600B4570D /* Theme.swift */; };
 		784AEB852CB64C5300B4570D /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB842CB64C5300B4570D /* HistoryView.swift */; };
 		784AEB872CB64C6700B4570D /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 784AEB862CB64C6700B4570D /* ButtonStyles.swift */; };
@@ -71,6 +72,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		784A5B232CD5268D004C14FB /* TestUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUI.swift; sourceTree = "<group>"; };
 		784AEB822CB64C2600B4570D /* Theme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = MathQuiz/Theme.swift; sourceTree = "<group>"; };
 		784AEB842CB64C5300B4570D /* HistoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistoryView.swift; path = MathQuiz/Views/History/HistoryView.swift; sourceTree = "<group>"; };
 		784AEB862CB64C6700B4570D /* ButtonStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ButtonStyles.swift; path = MathQuiz/Views/Common/ButtonStyles.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 		78A5D7CA2C82D5FA0021DB61 = {
 			isa = PBXGroup;
 			children = (
+				784A5B232CD5268D004C14FB /* TestUI.swift */,
 				784AEB882CBC5F4000B4570D /* QuizRowView.swift */,
 				784AEB862CB64C6700B4570D /* ButtonStyles.swift */,
 				784AEB842CB64C5300B4570D /* HistoryView.swift */,
@@ -443,6 +446,7 @@
 				78A5D7D72C82D5FB0021DB61 /* MathQuizApp.swift in Sources */,
 				789EB58E2CA9B10F00D7B81E /* QuizDao.swift in Sources */,
 				789EB5802C92CBCD00D7B81E /* StartView.swift in Sources */,
+				784A5B242CD5268D004C14FB /* TestUI.swift in Sources */,
 				789EB5902CA9B1E400D7B81E /* QuizGenerator.swift in Sources */,
 				784AEB852CB64C5300B4570D /* HistoryView.swift in Sources */,
 				789EB5822C948C4400D7B81E /* StartQuizViewModel.swift in Sources */,

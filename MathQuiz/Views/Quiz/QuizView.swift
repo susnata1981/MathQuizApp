@@ -122,15 +122,20 @@ struct QuizView: View {
     }
     
     var nextButtonView: some View {
-        NavigationLink(value: quizVM.quiz) {
-            StandardButton(title: "Next", action: {
-                quizVM.handleNextButtonClick()
-                if quizVM.showResults {
-                    stopTimer()
-                }
-            })
-        }
-    }
+           NavigationLink(value: quizVM.quiz) {
+               StandardButton(title: "Next", action: {
+                   if quizVM.hasFinishedQuiz() {
+                       stopTimer()
+                       quizVM.elapsedTime = elapsedTime  // Add this line
+                   }
+                   
+                   quizVM.handleNextButtonClick()
+//                   if quizVM.showResults {
+//                       quizVM.elapsedTime = elapsedTime  // Add this line
+//                   }
+               })
+           }
+       }
     
     private func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in

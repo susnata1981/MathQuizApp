@@ -61,8 +61,8 @@ struct ResultView: View {
                 
                 Text("\(score)%")
                     .font(theme.fonts.xxlarge)
-                    .foregroundColor(score > 70 ? theme.colors.primary : theme.colors.text)
-                    .fontWeight(.bold)
+                    .fontWeight(.heavy)
+                    .foregroundColor(theme.colors.text)
             }
         }.padding()
     }
@@ -72,7 +72,6 @@ struct ResultView: View {
             resultRow(label: "Total Questions", value: "\(session.quiz?.totalProblems ?? 0)")
             resultRow(label: "Correct Answers", value: "\(session.quiz?.score?.totalCorrect ?? 0)")
             resultRow(label: "Incorrect Answers", value: "\(session.quiz?.score?.totalIncorrect ?? 0)")
-//            resultRow(label: "Final Score", value: "\(score)%")
         }
         .padding()
         .cornerRadius(10)
@@ -80,22 +79,22 @@ struct ResultView: View {
     
     private func resultRow(label: String, value: String) -> some View {
         HStack {
+            Spacer()
             Text(label)
-                .font(theme.fonts.regular)
+                .font(.subheadline)
                 .foregroundColor(theme.colors.text)
             Spacer()
             Text(value)
                 .font(theme.fonts.bold)
                 .foregroundColor(theme.colors.text)
+            Spacer()
         }
     }
     
     private var actionButtons: some View {
         VStack(spacing: 15) {
             StandardButton(title: "Start New Game", action: { navigationManager.gotoHome() })
-            
-//            StandardButton(title: "Review Results", action: { navigationManager.gotoReviewResults(session.quiz!) }, style: SecondaryButtonStyle())
-            
+                        
             Button(action: { navigationManager.gotoReviewResults(session.quiz!) }) {
                 Text("Review Quiz")
                     .font(theme.fonts.regular)

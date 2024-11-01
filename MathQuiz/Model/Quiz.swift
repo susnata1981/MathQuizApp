@@ -12,7 +12,7 @@ enum MathOperation: String, CaseIterable, Codable {
     case add = "+"
     case subtract = "-"
     case multiply = "x"
-    case divide = "%"
+    case divide = "/"
 
     var symbol: String {
         switch self {
@@ -50,6 +50,7 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
     let operation: MathOperation
     let totalProblems: Int
     var numChoicesPerProblem = 4
+    var timeInSeconds: TimeInterval?
     
     var problems = [Problem]()
     var answers = [Int:String]()
@@ -62,6 +63,7 @@ class Quiz: CustomDebugStringConvertible, Hashable, Codable {
          difficultyLevel: DifficultyLevel,
          totalProblems: Int,
          createdAt: Date = Date()) {
+        
         self.operation = operation
         self.difficultyLevel = difficultyLevel
         self.totalProblems = totalProblems

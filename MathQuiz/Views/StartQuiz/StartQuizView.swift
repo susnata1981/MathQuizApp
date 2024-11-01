@@ -24,7 +24,7 @@ struct StartQuizView: View {
     var body: some View {
         ZStack {
             theme.colors.background.ignoresSafeArea(.all)
-
+            
             mainContent
                 .onAppear{
                     setupSession()
@@ -33,33 +33,37 @@ struct StartQuizView: View {
                 .accentColor(theme.colors.accent)
         }
     }
-  
+    
     private var mainContent: some View {
-        ScrollView {
-            VStack {
-                ZStack {
-                    if showCountdown {
-                        MyCountDownView(showCountdown: $showCountdown) {
-                            Task {
-                                print("Animation finished, waiting for quiz handler")
-                                session.quiz = await viewModel.handleStartQuiz()
-                                showCountdown = false
-                                quizNavManager.gotoQuiz()
-                            }
-                        }
-                        .transition(.opacity)
+        ZStack {
+            
+            if showCountdown {
+                MyCountDownView(showCountdown: $showCountdown) {
+                    Task {
+                        print("Animation finished, waiting for quiz handler")
+                        session.quiz = await viewModel.handleStartQuiz()
+                        showCountdown = false
+                        quizNavManager.gotoQuiz()
                     }
+                }.transition(.opacity)
+            }
+            else {
+                VStack(spacing: 10) {
                     
-                    VStack(spacing: 30) {
-                        titleView
-                        ChooseGameType(viewModel: viewModel)
-                        DifficultyPicker(viewModel: viewModel)
-                        NumberOfProblemsPicker(viewModel: viewModel)
-                        startButton
-                    }.padding()
-                }
-            }.padding(.bottom, 16)
-        }.navigationBarBackButtonHidden()
+                    titleView
+                    ChooseGameType(viewModel: viewModel)
+                    DifficultyPicker(viewModel: viewModel)
+                    NumberOfProblemsPicker(viewModel: viewModel)
+                    
+                    Spacer()
+                    
+                    startButton
+                        .padding(.bottom, 32)
+                    
+                }.navigationBarBackButtonHidden()
+            }
+            
+        }
     }
     
     private var titleView: some View {
@@ -135,9 +139,12 @@ struct StartQuizView: View {
         UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(theme.colors.primary)
         // Background color
         UISegmentedControl.appearance().backgroundColor = UIColor(theme.colors.background.opacity(0.1))
-
+        
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(theme.colors.accent)], for: .normal)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(.white)], for: .selected)
+        
+        UITabBar.appearance().backgroundColor = UIColor(theme.colors.background)
+        UITabBar.appearance().clipsToBounds = true
     }
 }
 
@@ -150,7 +157,7 @@ struct ChooseGameType: View {
             Text("Choose Operation")
                 .font(theme.fonts.bold)
                 .foregroundColor(theme.colors.text)
-
+            
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 20) {
                 ForEach(MathOperation.allCases, id: \.self) { operation in
                     GameTypeButton(operation: operation, viewModel: viewModel)
@@ -171,17 +178,18 @@ struct GameTypeButton: View {
     var body: some View {
         Button(action: {
             withAnimation(.spring(.bouncy)) {
+                
                 viewModel.handleSelectOperation(operation)
             }
         }) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.1)
-                            .shadow(.drop(color:.black.opacity(0.7), radius: 3, x: 5, y: 5)))
-                        .stroke(viewModel.selectedOperation == operation ? theme.colors.primary : Color.clear, lineWidth: 2)
-                        .scaleEffect(viewModel.selectedOperation == operation ? 0.9 : 1.0)
-                        .frame(width: 84, height: 84)
-
+                    .fill(Color.gray.opacity(0.1)
+                        .shadow(.drop(color:.black.opacity(0.7), radius: 3, x: 5, y: 5)))
+                    .stroke(viewModel.selectedOperation == operation ? theme.colors.primary : Color.clear, lineWidth: 2)
+                    .scaleEffect(viewModel.selectedOperation == operation ? 0.9 : 1.0)
+                    .frame(width: 84, height: 84)
+                
                 VStack {
                     Spacer()
                     
@@ -233,7 +241,7 @@ struct StartQuizView_Previews: PreviewProvider {
                 .environmentObject(Session())
                 .environmentObject(Theme.theme5)
                 .previewDisplayName("Default Theme")
-                        
+            
             // Preview in dark mode
             StartQuizView()
                 .environmentObject(mockUserManager())

@@ -48,7 +48,6 @@ struct MyCountDownView: View {
                 .scaleEffect(scale)
                 .opacity(opacity)
         }
-        .zIndex(1)
         .onReceive(timer) { _ in
             withAnimation(.easeInOut(duration: 0.5)) {
                 if count > 0 {

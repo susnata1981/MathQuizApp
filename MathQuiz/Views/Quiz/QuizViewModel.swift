@@ -20,6 +20,8 @@ class QuizViewModel: ObservableObject {
     @Published var isSelectedChoiceCorrect: Bool = false
     
     @Published var ctx: Context = Context()
+    var elapsedTime: TimeInterval = 0
+
     var quiz: Quiz? {
         didSet {
             self.ctx = Context()
@@ -97,32 +99,61 @@ class QuizViewModel: ObservableObject {
         return ctx.currentIndex == quiz!.getProblemCount() - 1
     }
     
+//    func handleNextButtonClick() -> Void {
+//        if !hasUserAnsweredCurrentQuestion() {
+//            return
+//        }
+//        
+//        quiz!.answers[ctx.currentProblem!.id!] = ctx.selectedChoice!.content
+//        quiz!.status = .inProgress
+//        
+//        Task {
+//            await QuizDao.shared.update(quiz!)
+//        }
+//        
+//        if hasFinishedQuiz() {
+//            // Finished Quiz, Update it
+//            Task {
+//                if let q = quiz {
+//                    q.status = .completed
+//                    q.computeScore()
+//                    await q.update()
+//                }
+//            }
+//            showResults = true
+//        } else {
+//            // Next Question
+//            getNextProblem()
+//        }
+//    }
+    
     func handleNextButtonClick() -> Void {
-        if !hasUserAnsweredCurrentQuestion() {
-            return
-        }
-        
-        quiz!.answers[ctx.currentProblem!.id!] = ctx.selectedChoice!.content
-        quiz!.status = .inProgress
-        
-        Task {
-            await QuizDao.shared.update(quiz!)
-        }
-        
-        if hasFinishedQuiz() {
-            // Finished Quiz, Update it
-            Task {
-                if let q = quiz {
-                    q.status = .completed
-                    q.computeScore()
-                    await q.update()
-                }
+            if !hasUserAnsweredCurrentQuestion() {
+                return
             }
-            showResults = true
-        } else {
-            // Next Question
-            getNextProblem()
-        }
+            
+            quiz!.answers[ctx.currentProblem!.id!] = ctx.selectedChoice!.content
+            quiz!.status = .inProgress
+            
+            Task {
+                await QuizDao.shared.update(quiz!)
+            }
+            
+            if hasFinishedQuiz() {
+                // Finished Quiz, Update it
+                Task {
+                    if let q = quiz {
+                        q.status = .completed
+                        q.computeScore()
+                        q.timeInSeconds = elapsedTime  // Add this line
+                        await q.update()
+                    }
+                }
+                showResults = true
+            } else {
+                // Next Question
+                getNextProblem()
+            }
     }
     
     

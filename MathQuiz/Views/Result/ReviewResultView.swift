@@ -49,21 +49,27 @@ struct ReviewResultView: View {
                 .cornerRadius(8)
                 .padding()
                 
+                
                 VStack {
                     MyMultiChoiceView(problem: currProblem, quiz: quiz, isReviewMode: true)
                         .padding(.horizontal)
                     
                     Spacer()
                     
-                    HStack {
+                    VStack {
+                        HStack {
+                            StandardButton(title: "Prev", action: handlePrevButtonTap, style: SecondaryButtonStyle())
+                            
+                            nextButtonView
+                        }
                         
-                        StandardButton(title: "Prev", action: handlePrevButtonTap, style: SecondaryButtonStyle())
-                        
-                        nextButtonView
+                        Button(action: { quizNavManager.gotoHome() }) {
+                            Text("Go Back")
+                                .font(.subheadline)
+                                .foregroundColor(theme.colors.accent)
+                        }.padding(.top)
                     }
-                    
-                    Spacer()
-                }.padding(.top, 24)
+                }
             }
         }
         .navigationBarBackButtonHidden()

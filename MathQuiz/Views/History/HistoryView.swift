@@ -49,7 +49,8 @@ struct HistoryView: View {
                             }
                             .listRowBackground(Color.clear)
                         }
-                    }
+                    }.scrollContentBackground(.hidden)
+                        .background(theme.colors.background)
                 }
             }
         }
